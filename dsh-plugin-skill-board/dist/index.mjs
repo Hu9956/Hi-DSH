@@ -2,15 +2,49 @@ import { readFile, writeFile } from "node:fs/promises";
 import { parse, stringify } from "yaml";
 //#region src/index.ts
 const name = "dsh-plugin-skill-board";
-const inject = ["skills", "fs"];
+const inject = {
+	required: ["skills"],
+	optional: ["webServer", "fs"]
+};
 function apply(ctx, config = {}) {
+	const service = new SkillBoardService(ctx, config);
 	ctx.effect(() => {
-		ctx.skillBoard = new SkillBoardService(ctx, config);
+		ctx.skillBoard = service;
 		return () => {
 			delete ctx.skillBoard;
 		};
 	});
-	ctx.effect(() => {});
+	ctx.effect(() => {
+		const webServer = ctx.webServer;
+		if (webServer === void 0) return;
+		let routeModule;
+		const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`;
+		const doRegister = async () => {
+			if (routeModule === void 0) routeModule = await import("./skill-board-route-91UH7LYs.mjs");
+			const { handleSkillBoardList, handleSkillBoardToggle, skillBoardRouteConstants } = routeModule;
+			const disposers = [];
+			disposers.push(webServer.register({
+				kind: "exact",
+				path: skillBoardRouteConstants.listPath,
+				handler: (req, res) => handleSkillBoardList(req, res, expectedOrigin, service)
+			}));
+			disposers.push(webServer.register({
+				kind: "exact",
+				path: skillBoardRouteConstants.togglePath,
+				handler: (req, res) => handleSkillBoardToggle(req, res, expectedOrigin, service)
+			}));
+			return disposers;
+		};
+		let disposers = [];
+		doRegister().then((ds) => {
+			disposers = ds;
+		}).catch((e) => ctx.logger.warn(`skill-board: failed to register routes: ${String(e)}`));
+		return () => {
+			for (const d of disposers) try {
+				d();
+			} catch {}
+		};
+	});
 }
 var SkillBoardService = class {
 	ctx;

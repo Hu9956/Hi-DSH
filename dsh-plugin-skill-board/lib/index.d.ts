@@ -6,7 +6,10 @@
  */
 import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "dsh-plugin-skill-board";
-export declare const inject: readonly ["skills", "fs"];
+export declare const inject: {
+    readonly required: readonly ["skills"];
+    readonly optional: readonly ["webServer", "fs"];
+};
 export interface SkillBoardItem {
     name: string;
     description: string;

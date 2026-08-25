@@ -10,7 +10,10 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml'
 
 export const name = 'dsh-plugin-skill-board'
-export const inject = ['skills', 'fs'] as const
+export const inject = {
+  required: ['skills'],
+  optional: ['webServer', 'fs'],
+} as const
 
 export interface SkillBoardItem {
   name: string
@@ -28,18 +31,44 @@ export interface Config {
 }
 
 export function apply(ctx: Context, config: Config = {}): void {
+  const service = new SkillBoardService(ctx, config)
   ctx.effect(() => {
-    // Expose a simple HTTP API via the host's webserver is optional in v0.1.
-    // For now, expose via ctx.skillBoard service for future UI/CLI use.
-    const service = new SkillBoardService(ctx, config)
     ;(ctx as any).skillBoard = service
     return () => { delete (ctx as any).skillBoard }
   })
 
-  // Tool for debugging / future manual use
+  // Register loopback HTTP API if webServer is available (desktop mode)
   ctx.effect(() => {
-    // No tool registration in v0.1 — keep host minimal.
-    // The toggleFile helper is tested directly.
+    const webServer = (ctx as any).webServer as undefined | { port: number; host: string; register: (route: unknown) => () => void }
+    if (webServer === undefined) return
+    // Lazy import to avoid circular
+    let routeModule: typeof import('./skill-board-route.ts') | undefined
+    const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`
+    const doRegister = async (): Promise<(() => void)[]> => {
+      if (routeModule === undefined) routeModule = await import('./skill-board-route.ts')
+      const { handleSkillBoardList, handleSkillBoardToggle, skillBoardRouteConstants } = routeModule
+      const disposers: (() => void)[] = []
+      disposers.push(
+        webServer.register({
+          kind: 'exact',
+          path: skillBoardRouteConstants.listPath,
+          handler: (req: unknown, res: unknown) =>
+            handleSkillBoardList(req as any, res as any, expectedOrigin, service),
+        }),
+      )
+      disposers.push(
+        webServer.register({
+          kind: 'exact',
+          path: skillBoardRouteConstants.togglePath,
+          handler: (req: unknown, res: unknown) =>
+            handleSkillBoardToggle(req as any, res as any, expectedOrigin, service),
+        }),
+      )
+      return disposers
+    }
+    let disposers: (() => void)[] = []
+    void doRegister().then(ds => { disposers = ds }).catch(e => ctx.logger.warn(`skill-board: failed to register routes: ${String(e)}`))
+    return () => { for (const d of disposers) try { d() } catch {} }
   })
 }
 
