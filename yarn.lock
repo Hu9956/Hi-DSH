@@ -1184,9 +1184,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-app-boot@patch:@deepseek-ai/dsh-app-boot@npm%3A0.1.1-rc.2#./patches/dsh-app-boot@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-app-boot@patch:@deepseek-ai/dsh-app-boot@npm%3A0.1.1-rc.2#./patches/dsh-app-boot@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-app-boot@patch:@deepseek-ai/dsh-app-boot@npm%3A0.1.1-rc.2#./patches/dsh-app-boot@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=d3d4c4&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-app-boot@patch:@deepseek-ai/dsh-app-boot@npm%3A0.1.1-rc.2#./patches/dsh-app-boot@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=d3d4c4&locator=hi-dsh%40workspace%3A."
   dependencies:
     js-yaml: "npm:^4.2.0"
   peerDependencies:
@@ -1617,9 +1617,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-client-ui-directory-picker-browse@patch:@deepseek-ai/dsh-client-ui-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-directory-picker-browse@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-client-ui-directory-picker-browse@patch:@deepseek-ai/dsh-client-ui-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-directory-picker-browse@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-client-ui-directory-picker-browse@patch:@deepseek-ai/dsh-client-ui-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-directory-picker-browse@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=7bc853&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-client-ui-directory-picker-browse@patch:@deepseek-ai/dsh-client-ui-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-directory-picker-browse@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=7bc853&locator=hi-dsh%40workspace%3A."
   dependencies:
     clsx: "npm:^2.0.0"
   peerDependencies:
@@ -1867,9 +1867,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-client-ui-settings-models@patch:@deepseek-ai/dsh-client-ui-settings-models@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-settings-models@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-client-ui-settings-models@patch:@deepseek-ai/dsh-client-ui-settings-models@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-settings-models@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-client-ui-settings-models@patch:@deepseek-ai/dsh-client-ui-settings-models@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-settings-models@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=c5beaa&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-client-ui-settings-models@patch:@deepseek-ai/dsh-client-ui-settings-models@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-settings-models@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=c5beaa&locator=hi-dsh%40workspace%3A."
   peerDependencies:
     "@deepseek-ai/cordis": ^4.0.1
     "@deepseek-ai/dsh-api-remotes": ^0.1.1-rc.2
@@ -2042,9 +2042,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-client-ui-trajectory@patch:@deepseek-ai/dsh-client-ui-trajectory@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-trajectory@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-client-ui-trajectory@patch:@deepseek-ai/dsh-client-ui-trajectory@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-trajectory@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-client-ui-trajectory@patch:@deepseek-ai/dsh-client-ui-trajectory@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-trajectory@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=fc9994&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-client-ui-trajectory@patch:@deepseek-ai/dsh-client-ui-trajectory@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-trajectory@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=fc9994&locator=hi-dsh%40workspace%3A."
   dependencies:
     "@tanstack/react-virtual": "npm:^3.14.9"
     diff: "npm:^9.0.0"
@@ -2110,9 +2110,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-client-ui-workspace@patch:@deepseek-ai/dsh-client-ui-workspace@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-workspace@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-client-ui-workspace@patch:@deepseek-ai/dsh-client-ui-workspace@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-workspace@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-client-ui-workspace@patch:@deepseek-ai/dsh-client-ui-workspace@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-workspace@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=73236e&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-client-ui-workspace@patch:@deepseek-ai/dsh-client-ui-workspace@npm%3A0.1.1-rc.2#./patches/dsh-client-ui-workspace@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=73236e&locator=hi-dsh%40workspace%3A."
   dependencies:
     clsx: "npm:^2.0.0"
   peerDependencies:
@@ -2554,9 +2554,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-host-directory-picker-browse@patch:@deepseek-ai/dsh-host-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-host-directory-picker-browse@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-host-directory-picker-browse@patch:@deepseek-ai/dsh-host-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-host-directory-picker-browse@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-host-directory-picker-browse@patch:@deepseek-ai/dsh-host-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-host-directory-picker-browse@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=c1fda8&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-host-directory-picker-browse@patch:@deepseek-ai/dsh-host-directory-picker-browse@npm%3A0.1.1-rc.2#./patches/dsh-host-directory-picker-browse@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=c1fda8&locator=hi-dsh%40workspace%3A."
   dependencies:
     "@deepseek-ai/dsh-host-directory-picker": "npm:^0.1.1-rc.2"
     "@deepseek-ai/schemastery": "npm:^3.18.1"
@@ -2704,9 +2704,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-llm-deepseek@patch:@deepseek-ai/dsh-llm-deepseek@npm%3A0.1.1-rc.2#./patches/dsh-llm-deepseek@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-llm-deepseek@patch:@deepseek-ai/dsh-llm-deepseek@npm%3A0.1.1-rc.2#./patches/dsh-llm-deepseek@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-llm-deepseek@patch:@deepseek-ai/dsh-llm-deepseek@npm%3A0.1.1-rc.2#./patches/dsh-llm-deepseek@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=667254&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-llm-deepseek@patch:@deepseek-ai/dsh-llm-deepseek@npm%3A0.1.1-rc.2#./patches/dsh-llm-deepseek@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=667254&locator=hi-dsh%40workspace%3A."
   dependencies:
     "@deepseek-ai/schemastery": "npm:^3.18.1"
     eventsource-parser: "npm:^3.1.0"
@@ -2983,9 +2983,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-sandbox-windows-acl@patch:@deepseek-ai/dsh-sandbox-windows-acl@npm%3A0.1.1-rc.2#./patches/dsh-sandbox-windows-acl@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-sandbox-windows-acl@patch:@deepseek-ai/dsh-sandbox-windows-acl@npm%3A0.1.1-rc.2#./patches/dsh-sandbox-windows-acl@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-sandbox-windows-acl@patch:@deepseek-ai/dsh-sandbox-windows-acl@npm%3A0.1.1-rc.2#./patches/dsh-sandbox-windows-acl@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=1adb74&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-sandbox-windows-acl@patch:@deepseek-ai/dsh-sandbox-windows-acl@npm%3A0.1.1-rc.2#./patches/dsh-sandbox-windows-acl@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=1adb74&locator=hi-dsh%40workspace%3A."
   dependencies:
     koffi: "npm:^3.1.0"
   peerDependencies:
@@ -3359,7 +3359,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-skill-filesystem@npm:^0.1.1-rc.2":
+"@deepseek-ai/dsh-skill-filesystem@npm:0.1.1-rc.2, @deepseek-ai/dsh-skill-filesystem@npm:^0.1.1-rc.2":
   version: 0.1.1-rc.2
   resolution: "@deepseek-ai/dsh-skill-filesystem@npm:0.1.1-rc.2"
   dependencies:
@@ -4203,9 +4203,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deepseek-ai/dsh-web-app@patch:@deepseek-ai/dsh-web-app@npm%3A0.1.1-rc.2#./patches/dsh-web-app@0.1.1-rc.2.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"@deepseek-ai/dsh-web-app@patch:@deepseek-ai/dsh-web-app@npm%3A0.1.1-rc.2#./patches/dsh-web-app@0.1.1-rc.2.patch::locator=hi-dsh%40workspace%3A.":
   version: 0.1.1-rc.2
-  resolution: "@deepseek-ai/dsh-web-app@patch:@deepseek-ai/dsh-web-app@npm%3A0.1.1-rc.2#./patches/dsh-web-app@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=b5b8ec&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "@deepseek-ai/dsh-web-app@patch:@deepseek-ai/dsh-web-app@npm%3A0.1.1-rc.2#./patches/dsh-web-app@0.1.1-rc.2.patch::version=0.1.1-rc.2&hash=b5b8ec&locator=hi-dsh%40workspace%3A."
   dependencies:
     "@deepseek-ai/dsh-agent-presets": "npm:^0.1.1-rc.2"
     "@deepseek-ai/dsh-api-remotes": "npm:^0.1.1-rc.2"
@@ -6980,9 +6980,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-builder-lib@patch:app-builder-lib@npm%3A26.15.7#./patches/app-builder-lib@26.15.7.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"app-builder-lib@patch:app-builder-lib@npm%3A26.15.7#./patches/app-builder-lib@26.15.7.patch::locator=hi-dsh%40workspace%3A.":
   version: 26.15.7
-  resolution: "app-builder-lib@patch:app-builder-lib@npm%3A26.15.7#./patches/app-builder-lib@26.15.7.patch::version=26.15.7&hash=1a3632&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "app-builder-lib@patch:app-builder-lib@npm%3A26.15.7#./patches/app-builder-lib@26.15.7.patch::version=26.15.7&hash=1a3632&locator=hi-dsh%40workspace%3A."
   dependencies:
     "@electron/asar": "npm:3.4.1"
     "@electron/fuses": "npm:^1.8.0"
@@ -7868,29 +7868,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deepseek-harness-desktop@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "deepseek-harness-desktop@workspace:."
-  dependenciesMeta:
-    "@deepseek-ai/dsh-subprocess-local":
-      built: true
-    "@google/genai":
-      built: false
-    electron:
-      built: true
-    electron-winstaller:
-      built: false
-    esbuild:
-      built: true
-    koffi:
-      built: true
-    node-pty:
-      built: true
-    protobufjs:
-      built: false
-  languageName: unknown
-  linkType: soft
-
 "default-browser-id@npm:^5.0.0":
   version: 5.0.1
   resolution: "default-browser-id@npm:5.0.1"
@@ -8372,6 +8349,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"dsh-plugin-skill-board@workspace:dsh-plugin-skill-board":
+  version: 0.0.0-use.local
+  resolution: "dsh-plugin-skill-board@workspace:dsh-plugin-skill-board"
+  dependencies:
+    "@deepseek-ai/cordis": "npm:4.0.1"
+    "@deepseek-ai/dsh-skill": "npm:0.1.1-rc.2"
+    "@deepseek-ai/dsh-skill-filesystem": "npm:0.1.1-rc.2"
+    "@deepseek-ai/dsh-tools": "npm:0.1.1-rc.2"
+    tsdown: "npm:0.22.2"
+    typescript: "npm:6.0.3"
+    vitest: "npm:4.1.8"
+    yaml: "npm:^2.9.0"
+  languageName: unknown
+  linkType: soft
+
 "dshmarket@npm:1.17.1":
   version: 1.17.1
   resolution: "dshmarket@npm:1.17.1"
@@ -8388,9 +8380,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dshmarket@patch:dshmarket@npm%3A1.17.1#./.yarn/patches/dshmarket-npm-1.17.1-d9fe6da08c.patch::locator=deepseek-harness-desktop%40workspace%3A.":
+"dshmarket@patch:dshmarket@npm%3A1.17.1#./.yarn/patches/dshmarket-npm-1.17.1-d9fe6da08c.patch::locator=hi-dsh%40workspace%3A.":
   version: 1.17.1
-  resolution: "dshmarket@patch:dshmarket@npm%3A1.17.1#./.yarn/patches/dshmarket-npm-1.17.1-d9fe6da08c.patch::version=1.17.1&hash=97227b&locator=deepseek-harness-desktop%40workspace%3A."
+  resolution: "dshmarket@patch:dshmarket@npm%3A1.17.1#./.yarn/patches/dshmarket-npm-1.17.1-d9fe6da08c.patch::version=1.17.1&hash=97227b&locator=hi-dsh%40workspace%3A."
   dependencies:
     js-yaml: "npm:^4.1.0"
     undici: "npm:^7.29.0"
@@ -9387,6 +9379,29 @@ __metadata:
   checksum: 10c0/b898bc9fe27884b272580d15260b6bbdabe239973a147e97fa98c45fa0ffec967a481aaa42291ec34fb56530dc2d484d473d7e2bae79f39c83f3762307edfea8
   languageName: node
   linkType: hard
+
+"hi-dsh@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "hi-dsh@workspace:."
+  dependenciesMeta:
+    "@deepseek-ai/dsh-subprocess-local":
+      built: true
+    "@google/genai":
+      built: false
+    electron:
+      built: true
+    electron-winstaller:
+      built: false
+    esbuild:
+      built: true
+    koffi:
+      built: true
+    node-pty:
+      built: true
+    protobufjs:
+      built: false
+  languageName: unknown
+  linkType: soft
 
 "hono@npm:^4.11.4":
   version: 4.13.2

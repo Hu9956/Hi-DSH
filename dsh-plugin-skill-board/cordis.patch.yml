@@ -1,0 +1,6 @@
+# Hi-DSH Skill Board — mounts alongside dsh-plugin-desktop
+- insert:
+    - id: hi-dsh-skill-board
+      name: dsh-plugin-skill-board
+    - id: hi-dsh-skill-board-client
+      name: dsh-plugin-skill-board/client
