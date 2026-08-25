@@ -1,3 +1,4 @@
+import { handleSkillBoardList, handleSkillBoardPage, handleSkillBoardToggle, skillBoardRouteConstants } from "./skill-board-route.mjs";
 import { readFile, writeFile } from "node:fs/promises";
 import { parse, stringify } from "yaml";
 //#region src/index.ts
@@ -8,36 +9,32 @@ function apply(ctx, config = {}) {
 	ctx.effect(() => {
 		const webServer = ctx.get("webServer");
 		if (webServer === void 0) return;
-		let routeModule;
 		const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`;
-		const doRegister = async () => {
-			if (routeModule === void 0) routeModule = await import("./skill-board-route.mjs");
-			const { handleSkillBoardList, handleSkillBoardToggle, handleSkillBoardPage, skillBoardRouteConstants } = routeModule;
-			const disposers = [];
-			disposers.push(webServer.register({
-				kind: "exact",
-				path: skillBoardRouteConstants.listPath,
-				handler: (req, res) => handleSkillBoardList(req, res, expectedOrigin, service)
-			}));
-			disposers.push(webServer.register({
-				kind: "exact",
-				path: skillBoardRouteConstants.togglePath,
-				handler: (req, res) => handleSkillBoardToggle(req, res, expectedOrigin, service)
-			}));
-			disposers.push(webServer.register({
-				kind: "exact",
-				path: skillBoardRouteConstants.pagePath,
-				handler: (req, res) => handleSkillBoardPage(req, res, expectedOrigin)
-			}));
-			return disposers;
-		};
-		let disposers = [];
-		doRegister().then((ds) => {
-			disposers = ds;
-		}).catch((e) => ctx.logger.warn(`skill-board: failed to register routes: ${String(e)}`));
+		const d1 = webServer.register({
+			kind: "exact",
+			path: skillBoardRouteConstants.listPath,
+			handler: (req, res) => handleSkillBoardList(req, res, expectedOrigin, service)
+		});
+		const d2 = webServer.register({
+			kind: "exact",
+			path: skillBoardRouteConstants.togglePath,
+			handler: (req, res) => handleSkillBoardToggle(req, res, expectedOrigin, service)
+		});
+		const d3 = webServer.register({
+			kind: "exact",
+			path: skillBoardRouteConstants.pagePath,
+			handler: (req, res) => handleSkillBoardPage(req, res, expectedOrigin)
+		});
+		ctx.logger.info(`skill-board: routes registered at ${expectedOrigin}${skillBoardRouteConstants.pagePath}`);
 		return () => {
-			for (const d of disposers) try {
-				d();
+			try {
+				d1();
+			} catch {}
+			try {
+				d2();
+			} catch {}
+			try {
+				d3();
 			} catch {}
 		};
 	});

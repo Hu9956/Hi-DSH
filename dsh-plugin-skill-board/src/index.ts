@@ -8,6 +8,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import { readFile, writeFile } from 'node:fs/promises'
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml'
+import { handleSkillBoardList, handleSkillBoardPage, handleSkillBoardToggle, skillBoardRouteConstants } from './skill-board-route.ts'
 
 export const name = 'dsh-plugin-skill-board'
 export const inject = ['skills'] as const
@@ -31,46 +32,28 @@ export function apply(ctx: Context, config: Config = {}): void {
   const service = new SkillBoardService(ctx, config)
   // Keep service in closure for HTTP routes; no need to expose as ctx service in v0.1
 
-  // Register loopback HTTP API if webServer is available (desktop mode)
+  // Register loopback HTTP API if webServer is available (desktop mode) — sync to avoid 404 race
   ctx.effect(() => {
     const webServer = ctx.get('webServer') as undefined | { port: number; host: string; register: (route: unknown) => () => void }
     if (webServer === undefined) return
-    // Lazy import to avoid circular
-    let routeModule: typeof import('./skill-board-route.ts') | undefined
     const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`
-    const doRegister = async (): Promise<(() => void)[]> => {
-      if (routeModule === undefined) routeModule = await import('./skill-board-route.ts')
-      const { handleSkillBoardList, handleSkillBoardToggle, handleSkillBoardPage, skillBoardRouteConstants } = routeModule
-      const disposers: (() => void)[] = []
-      disposers.push(
-        webServer.register({
-          kind: 'exact',
-          path: skillBoardRouteConstants.listPath,
-          handler: (req: unknown, res: unknown) =>
-            handleSkillBoardList(req as any, res as any, expectedOrigin, service),
-        }),
-      )
-      disposers.push(
-        webServer.register({
-          kind: 'exact',
-          path: skillBoardRouteConstants.togglePath,
-          handler: (req: unknown, res: unknown) =>
-            handleSkillBoardToggle(req as any, res as any, expectedOrigin, service),
-        }),
-      )
-      disposers.push(
-        webServer.register({
-          kind: 'exact',
-          path: skillBoardRouteConstants.pagePath,
-          handler: (req: unknown, res: unknown) =>
-            handleSkillBoardPage(req as any, res as any, expectedOrigin),
-        }),
-      )
-      return disposers
-    }
-    let disposers: (() => void)[] = []
-    void doRegister().then(ds => { disposers = ds }).catch(e => ctx.logger.warn(`skill-board: failed to register routes: ${String(e)}`))
-    return () => { for (const d of disposers) try { d() } catch {} }
+    const d1 = webServer.register({
+      kind: 'exact',
+      path: skillBoardRouteConstants.listPath,
+      handler: (req: unknown, res: unknown) => handleSkillBoardList(req as any, res as any, expectedOrigin, service),
+    })
+    const d2 = webServer.register({
+      kind: 'exact',
+      path: skillBoardRouteConstants.togglePath,
+      handler: (req: unknown, res: unknown) => handleSkillBoardToggle(req as any, res as any, expectedOrigin, service),
+    })
+    const d3 = webServer.register({
+      kind: 'exact',
+      path: skillBoardRouteConstants.pagePath,
+      handler: (req: unknown, res: unknown) => handleSkillBoardPage(req as any, res as any, expectedOrigin),
+    })
+    ctx.logger.info(`skill-board: routes registered at ${expectedOrigin}${skillBoardRouteConstants.pagePath}`)
+    return () => { try { d1() } catch {} try { d2() } catch {} try { d3() } catch {} }
   })
 }
 
