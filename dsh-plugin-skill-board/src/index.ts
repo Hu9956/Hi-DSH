@@ -32,28 +32,46 @@ export function apply(ctx: Context, config: Config = {}): void {
   const service = new SkillBoardService(ctx, config)
   // Keep service in closure for HTTP routes; no need to expose as ctx service in v0.1
 
-  // Register loopback HTTP API if webServer is available (desktop mode) — sync to avoid 404 race
+  // Register loopback HTTP API if webServer is available (desktop mode) — sync + retry for startup order
   ctx.effect(() => {
-    const webServer = ctx.get('webServer') as undefined | { port: number; host: string; register: (route: unknown) => () => void }
-    if (webServer === undefined) return
-    const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`
-    const d1 = webServer.register({
-      kind: 'exact',
-      path: skillBoardRouteConstants.listPath,
-      handler: (req: unknown, res: unknown) => handleSkillBoardList(req as any, res as any, expectedOrigin, service),
-    })
-    const d2 = webServer.register({
-      kind: 'exact',
-      path: skillBoardRouteConstants.togglePath,
-      handler: (req: unknown, res: unknown) => handleSkillBoardToggle(req as any, res as any, expectedOrigin, service),
-    })
-    const d3 = webServer.register({
-      kind: 'exact',
-      path: skillBoardRouteConstants.pagePath,
-      handler: (req: unknown, res: unknown) => handleSkillBoardPage(req as any, res as any, expectedOrigin),
-    })
-    ctx.logger.info(`skill-board: routes registered at ${expectedOrigin}${skillBoardRouteConstants.pagePath}`)
-    return () => { try { d1() } catch {} try { d2() } catch {} try { d3() } catch {} }
+    let d1: (() => void) | undefined
+    let d2: (() => void) | undefined
+    let d3: (() => void) | undefined
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const tryRegister = (): boolean => {
+      const webServer = ctx.get('webServer') as undefined | { port: number; host: string; register: (route: unknown) => () => void }
+      if (webServer === undefined) return false
+      const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`
+      d1 = webServer.register({
+        kind: 'exact',
+        path: skillBoardRouteConstants.listPath,
+        handler: (req: unknown, res: unknown) => handleSkillBoardList(req as any, res as any, expectedOrigin, service),
+      })
+      d2 = webServer.register({
+        kind: 'exact',
+        path: skillBoardRouteConstants.togglePath,
+        handler: (req: unknown, res: unknown) => handleSkillBoardToggle(req as any, res as any, expectedOrigin, service),
+      })
+      d3 = webServer.register({
+        kind: 'exact',
+        path: skillBoardRouteConstants.pagePath,
+        handler: (req: unknown, res: unknown) => handleSkillBoardPage(req as any, res as any, expectedOrigin),
+      })
+      ctx.logger.info(`skill-board: routes registered at ${expectedOrigin}${skillBoardRouteConstants.pagePath}`)
+      return true
+    }
+    if (!tryRegister()) {
+      timer = setInterval(() => {
+        if (tryRegister() && timer !== undefined) { clearInterval(timer); timer = undefined }
+      }, 200)
+      // also catch late service creation via effect re-run is not automatic, so poll
+    }
+    return () => {
+      if (timer !== undefined) clearInterval(timer)
+      try { d1?.() } catch {}
+      try { d2?.() } catch {}
+      try { d3?.() } catch {}
+    }
   })
 }
 

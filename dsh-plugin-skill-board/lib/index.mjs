@@ -7,34 +7,48 @@ const inject = ["skills"];
 function apply(ctx, config = {}) {
 	const service = new SkillBoardService(ctx, config);
 	ctx.effect(() => {
-		const webServer = ctx.get("webServer");
-		if (webServer === void 0) return;
-		const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`;
-		const d1 = webServer.register({
-			kind: "exact",
-			path: skillBoardRouteConstants.listPath,
-			handler: (req, res) => handleSkillBoardList(req, res, expectedOrigin, service)
-		});
-		const d2 = webServer.register({
-			kind: "exact",
-			path: skillBoardRouteConstants.togglePath,
-			handler: (req, res) => handleSkillBoardToggle(req, res, expectedOrigin, service)
-		});
-		const d3 = webServer.register({
-			kind: "exact",
-			path: skillBoardRouteConstants.pagePath,
-			handler: (req, res) => handleSkillBoardPage(req, res, expectedOrigin)
-		});
-		ctx.logger.info(`skill-board: routes registered at ${expectedOrigin}${skillBoardRouteConstants.pagePath}`);
+		let d1;
+		let d2;
+		let d3;
+		let timer;
+		const tryRegister = () => {
+			const webServer = ctx.get("webServer");
+			if (webServer === void 0) return false;
+			const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`;
+			d1 = webServer.register({
+				kind: "exact",
+				path: skillBoardRouteConstants.listPath,
+				handler: (req, res) => handleSkillBoardList(req, res, expectedOrigin, service)
+			});
+			d2 = webServer.register({
+				kind: "exact",
+				path: skillBoardRouteConstants.togglePath,
+				handler: (req, res) => handleSkillBoardToggle(req, res, expectedOrigin, service)
+			});
+			d3 = webServer.register({
+				kind: "exact",
+				path: skillBoardRouteConstants.pagePath,
+				handler: (req, res) => handleSkillBoardPage(req, res, expectedOrigin)
+			});
+			ctx.logger.info(`skill-board: routes registered at ${expectedOrigin}${skillBoardRouteConstants.pagePath}`);
+			return true;
+		};
+		if (!tryRegister()) timer = setInterval(() => {
+			if (tryRegister() && timer !== void 0) {
+				clearInterval(timer);
+				timer = void 0;
+			}
+		}, 200);
 		return () => {
+			if (timer !== void 0) clearInterval(timer);
 			try {
-				d1();
+				d1?.();
 			} catch {}
 			try {
-				d2();
+				d2?.();
 			} catch {}
 			try {
-				d3();
+				d3?.();
 			} catch {}
 		};
 	});
