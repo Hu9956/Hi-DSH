@@ -40,7 +40,7 @@ export function apply(ctx: Context, config: Config = {}): void {
     const expectedOrigin = `http://${webServer.host}:${String(webServer.port)}`
     const doRegister = async (): Promise<(() => void)[]> => {
       if (routeModule === undefined) routeModule = await import('./skill-board-route.ts')
-      const { handleSkillBoardList, handleSkillBoardToggle, skillBoardRouteConstants } = routeModule
+      const { handleSkillBoardList, handleSkillBoardToggle, handleSkillBoardPage, skillBoardRouteConstants } = routeModule
       const disposers: (() => void)[] = []
       disposers.push(
         webServer.register({
@@ -56,6 +56,14 @@ export function apply(ctx: Context, config: Config = {}): void {
           path: skillBoardRouteConstants.togglePath,
           handler: (req: unknown, res: unknown) =>
             handleSkillBoardToggle(req as any, res as any, expectedOrigin, service),
+        }),
+      )
+      disposers.push(
+        webServer.register({
+          kind: 'exact',
+          path: skillBoardRouteConstants.pagePath,
+          handler: (req: unknown, res: unknown) =>
+            handleSkillBoardPage(req as any, res as any, expectedOrigin),
         }),
       )
       return disposers
