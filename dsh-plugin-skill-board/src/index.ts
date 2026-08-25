@@ -10,10 +10,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml'
 
 export const name = 'dsh-plugin-skill-board'
-export const inject = {
-  required: ['skills'],
-  optional: ['webServer', 'fs'],
-} as const
+export const inject = ['skills'] as const
 
 export interface SkillBoardItem {
   name: string
@@ -32,14 +29,11 @@ export interface Config {
 
 export function apply(ctx: Context, config: Config = {}): void {
   const service = new SkillBoardService(ctx, config)
-  ctx.effect(() => {
-    ;(ctx as any).skillBoard = service
-    return () => { delete (ctx as any).skillBoard }
-  })
+  // Keep service in closure for HTTP routes; no need to expose as ctx service in v0.1
 
   // Register loopback HTTP API if webServer is available (desktop mode)
   ctx.effect(() => {
-    const webServer = (ctx as any).webServer as undefined | { port: number; host: string; register: (route: unknown) => () => void }
+    const webServer = ctx.get('webServer') as undefined | { port: number; host: string; register: (route: unknown) => () => void }
     if (webServer === undefined) return
     // Lazy import to avoid circular
     let routeModule: typeof import('./skill-board-route.ts') | undefined

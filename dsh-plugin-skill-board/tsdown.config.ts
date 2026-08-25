@@ -1,7 +1,8 @@
 import { defineConfig } from 'tsdown'
 export default defineConfig({
-  entry: ['src/index.ts', 'src/client.ts'],
+  entry: ['src/index.ts', 'src/client.ts', 'src/skill-board-route.ts'],
   format: ['esm'],
   dts: false,
-  clean: true,
+  clean: false,
+  outDir: 'lib',
 })

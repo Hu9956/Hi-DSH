@@ -4,16 +4,16 @@
   "description": "Hi-DSH Skill Board — Visual skill toggle for DSH (hot, saves tokens)",
   "license": "MIT",
   "type": "module",
-  "main": "lib/index.js",
+  "main": "lib/index.mjs",
   "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
-      "default": "./lib/index.js"
+      "default": "./lib/index.mjs"
     },
     "./client": {
       "types": "./lib/client/index.d.ts",
-      "default": "./lib/client.js"
+      "default": "./lib/client.mjs"
     }
   },
   "files": [

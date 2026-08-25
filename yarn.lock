@@ -8320,7 +8320,7 @@ __metadata:
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
     dsh-community-market: "npm:0.1.0-dev.0"
-    dsh-plugin-skill-board: "workspace:^"
+    dsh-plugin-skill-board: "npm:0.1.0"
     dshmarket: "npm:1.17.1"
     electron: "npm:43.4.0"
     electron-builder: "npm:26.15.7"
@@ -8350,7 +8350,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"dsh-plugin-skill-board@workspace:^, dsh-plugin-skill-board@workspace:dsh-plugin-skill-board":
+"dsh-plugin-skill-board@npm:0.1.0, dsh-plugin-skill-board@workspace:dsh-plugin-skill-board":
   version: 0.0.0-use.local
   resolution: "dsh-plugin-skill-board@workspace:dsh-plugin-skill-board"
   dependencies:
