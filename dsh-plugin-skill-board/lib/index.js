@@ -1,5 +1,7 @@
 import { handleSkillBoardList, handleSkillBoardPage, handleSkillBoardToggle, skillBoardRouteConstants } from "./skill-board-route.mjs";
-import { readFile, writeFile } from "node:fs/promises";
+import { access, readFile, readdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join, resolve } from "node:path";
 import { parse, stringify } from "yaml";
 //#region src/index.ts
 const name = "dsh-plugin-skill-board";
@@ -53,6 +55,8 @@ function apply(ctx, config = {}) {
 		};
 	});
 }
+const USER_DSH_RANK = 400;
+const USER_AGENTS_RANK = 500;
 var SkillBoardService = class {
 	ctx;
 	config;
@@ -60,35 +64,83 @@ var SkillBoardService = class {
 		this.ctx = ctx;
 		this.config = config;
 	}
-	async list() {
-		return (await this.ctx.skills.snapshot({ cwd: process.cwd() })).skills.map((s) => ({
-			name: s.name,
-			description: s.description,
-			source: s.source,
-			provider: s.provider,
-			path: s.path,
-			modelInvocable: s.invocation.modelInvocable,
-			userInvocable: s.invocation.userInvocable
-		})).sort((a, b) => a.name.localeCompare(b.name));
+	/** Skill roots mirroring the local provider's default roots (user level). */
+	roots() {
+		return [{
+			path: join(resolveDshHomeSafe(), "skills"),
+			source: "user-dsh",
+			rank: USER_DSH_RANK
+		}, {
+			path: join(process.env.DSH_AGENTS_HOME ?? join(homedir(), ".agents"), "skills"),
+			source: "user-agents",
+			rank: USER_AGENTS_RANK
+		}];
 	}
-	/**
-	* Toggle model-invocable for a skill file.
-	* @param name skill name
-	* @param enabled true = model can invoke, false = hidden from catalog (saves tokens)
-	*/
+	async list() {
+		return (await this.scan()).sort((a, b) => a.name.localeCompare(b.name));
+	}
 	async toggle(name, enabled) {
-		const target = (await this.ctx.skills.snapshot({ cwd: process.cwd() })).skills.find((s) => s.name === name);
+		const target = (await this.scan()).find((s) => s.name === name);
 		if (!target) throw new Error(`skill "${name}" not found`);
-		if (!target.path) throw new Error(`skill "${name}" has no file path (runtime skill) — cannot toggle via file`);
-		const filePath = target.path;
-		const newMode = await toggleSkillFile(filePath, enabled, this.config.dryRun ?? false);
-		ctx.logger.info(`skill-board: ${name} -> modelInvocable=${newMode} at ${filePath}`);
+		const newMode = await toggleSkillFile(target.path, enabled, this.config.dryRun ?? false);
+		this.ctx.logger.info(`skill-board: ${name} -> modelInvocable=${newMode} at ${target.path}`);
 		return {
-			path: filePath,
+			path: target.path,
 			enabled: newMode
 		};
 	}
+	/** Scan user roots for bundle (dir/SKILL.md) and flat (<name>.md) skills. */
+	async scan() {
+		const result = [];
+		for (const root of this.roots()) {
+			let entries;
+			try {
+				entries = await readdir(root.path, { withFileTypes: true });
+			} catch {
+				continue;
+			}
+			for (const entry of entries) {
+				if (entry.name === ".system") continue;
+				if (entry.isDirectory()) {
+					const path = join(root.path, entry.name, "SKILL.md");
+					const parsed = await this.parse(path, root.source);
+					if (parsed) result.push(parsed);
+				} else if (entry.isFile() && entry.name.endsWith(".md")) {
+					const path = join(root.path, entry.name);
+					const parsed = await this.parse(path, root.source);
+					if (parsed) result.push(parsed);
+				}
+			}
+		}
+		const seen = /* @__PURE__ */ new Set();
+		return result.filter((s) => !seen.has(s.name) && seen.add(s.name) !== void 0);
+	}
+	async parse(path, source) {
+		try {
+			await access(path);
+			const parsed = parseFrontmatter(await readFile(path, "utf8"));
+			if (!parsed) return void 0;
+			const name = parsed.data["name"];
+			const description = parsed.data["description"];
+			if (typeof name !== "string" || typeof description !== "string") return void 0;
+			const disableModel = parsed.data["disable-model-invocation"];
+			const userInv = parsed.data["user-invocable"];
+			return {
+				name,
+				description,
+				source,
+				path,
+				modelInvocable: disableModel !== true,
+				userInvocable: userInv !== false
+			};
+		} catch {
+			return;
+		}
+	}
 };
+function resolveDshHomeSafe() {
+	return resolve(process.env.DSH_HOME ?? join(homedir(), ".dsh"));
+}
 /**
 * Patch SKILL.md frontmatter to set disable-model-invocation.
 * Hot-reload is handled by skill-filesystem chokidar + tool-skill catalog replacement.

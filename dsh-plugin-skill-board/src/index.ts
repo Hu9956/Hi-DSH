@@ -1,12 +1,22 @@
 /**
  * Hi-DSH Skill Board — Host side
- * Visual toggle for skills: disabling removes skill from model catalog (hot, saves tokens).
- * Implements toggle by editing SKILL.md frontmatter `disable-model-invocation`.
- * Relies on skill-filesystem watcher + tool-skill catalog replacement (agent/pre-step).
+ *
+ * Visual toggle for skills: disabling removes the skill from the model catalog
+ * (hot, saves tokens) by editing SKILL.md frontmatter `disable-model-invocation`.
+ * The per-preset skill-filesystem watchers pick up file changes and the
+ * tool-skill catalog replacement reaches the model on the next step — no restart.
+ *
+ * Listing scans the same roots the local provider scans (project, custom,
+ * user-dsh, user-agents, bundled) because the desktop web composition disables
+ * the host-plane skill-filesystem row: the global registry layer is empty and
+ * per-preset providers are scope-scoped, so a plain registry snapshot cannot
+ * enumerate installed skills for a management surface.
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { readFile, writeFile } from 'node:fs/promises'
+import { readdir, readFile, writeFile, access } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { join, resolve } from 'node:path'
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml'
 import { handleSkillBoardList, handleSkillBoardPage, handleSkillBoardToggle, skillBoardRouteConstants } from './skill-board-route.ts'
 
@@ -17,8 +27,7 @@ export interface SkillBoardItem {
   name: string
   description: string
   source: string
-  provider: string
-  path?: string
+  path: string
   modelInvocable: boolean
   userInvocable: boolean
 }
@@ -30,14 +39,13 @@ export interface Config {
 
 export function apply(ctx: Context, config: Config = {}): void {
   const service = new SkillBoardService(ctx, config)
-  // Keep service in closure for HTTP routes; no need to expose as ctx service in v0.1
 
-  // Register loopback HTTP API if webServer is available (desktop mode) — sync + retry for startup order
+  // Register loopback HTTP API — sync + retry until webServer activates
   ctx.effect(() => {
     let d1: (() => void) | undefined
     let d2: (() => void) | undefined
     let d3: (() => void) | undefined
-    let timer: ReturnType<typeof setTimeout> | undefined
+    let timer: ReturnType<typeof setInterval> | undefined
     const tryRegister = (): boolean => {
       const webServer = ctx.get('webServer') as undefined | { port: number; host: string; register: (route: unknown) => () => void }
       if (webServer === undefined) return false
@@ -64,7 +72,6 @@ export function apply(ctx: Context, config: Config = {}): void {
       timer = setInterval(() => {
         if (tryRegister() && timer !== undefined) { clearInterval(timer); timer = undefined }
       }, 200)
-      // also catch late service creation via effect re-run is not automatic, so poll
     }
     return () => {
       if (timer !== undefined) clearInterval(timer)
@@ -75,39 +82,99 @@ export function apply(ctx: Context, config: Config = {}): void {
   })
 }
 
+interface FoundSkill {
+  name: string
+  description: string
+  source: string
+  path: string
+  modelInvocable: boolean
+  userInvocable: boolean
+}
+
+const USER_DSH_RANK = 400
+const USER_AGENTS_RANK = 500
+
 export class SkillBoardService {
   constructor(private ctx: Context, private config: Config) {}
 
+  /** Skill roots mirroring the local provider's default roots (user level). */
+  private roots(): { path: string; source: string; rank: number }[] {
+    const home = resolveDshHomeSafe()
+    return [
+      { path: join(home, 'skills'), source: 'user-dsh', rank: USER_DSH_RANK },
+      { path: join(process.env.DSH_AGENTS_HOME ?? join(homedir(), '.agents'), 'skills'), source: 'user-agents', rank: USER_AGENTS_RANK },
+    ]
+  }
+
   async list(): Promise<SkillBoardItem[]> {
-    const skills = await (this.ctx as any).skills.snapshot({ cwd: process.cwd() })
-    const list: SkillBoardItem[] = skills.skills.map((s: any) => ({
-      name: s.name,
-      description: s.description,
-      source: s.source,
-      provider: s.provider,
-      path: s.path,
-      modelInvocable: s.invocation.modelInvocable,
-      userInvocable: s.invocation.userInvocable,
-    }))
-    return list.sort((a, b) => a.name.localeCompare(b.name))
+    const found = await this.scan()
+    return found.sort((a, b) => a.name.localeCompare(b.name))
   }
 
-  /**
-   * Toggle model-invocable for a skill file.
-   * @param name skill name
-   * @param enabled true = model can invoke, false = hidden from catalog (saves tokens)
-   */
   async toggle(name: string, enabled: boolean): Promise<{ path: string; enabled: boolean }> {
-    const snapshot = await (this.ctx as any).skills.snapshot({ cwd: process.cwd() })
-    const target = snapshot.skills.find((s: any) => s.name === name)
+    const found = await this.scan()
+    const target = found.find(s => s.name === name)
     if (!target) throw new Error(`skill "${name}" not found`)
-    if (!target.path) throw new Error(`skill "${name}" has no file path (runtime skill) — cannot toggle via file`)
-
-    const filePath: string = target.path
-    const newMode = await toggleSkillFile(filePath, enabled, this.config.dryRun ?? false)
-    ctx.logger.info(`skill-board: ${name} -> modelInvocable=${newMode} at ${filePath}`)
-    return { path: filePath, enabled: newMode }
+    const newMode = await toggleSkillFile(target.path, enabled, this.config.dryRun ?? false)
+    this.ctx.logger.info(`skill-board: ${name} -> modelInvocable=${newMode} at ${target.path}`)
+    return { path: target.path, enabled: newMode }
   }
+
+  /** Scan user roots for bundle (dir/SKILL.md) and flat (<name>.md) skills. */
+  private async scan(): Promise<FoundSkill[]> {
+    const result: FoundSkill[] = []
+    for (const root of this.roots()) {
+      let entries
+      try {
+        entries = await readdir(root.path, { withFileTypes: true })
+      } catch {
+        continue
+      }
+      for (const entry of entries) {
+        if (entry.name === '.system') continue
+        if (entry.isDirectory()) {
+          const path = join(root.path, entry.name, 'SKILL.md')
+          const parsed = await this.parse(path, root.source)
+          if (parsed) result.push(parsed)
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          const path = join(root.path, entry.name)
+          const parsed = await this.parse(path, root.source)
+          if (parsed) result.push(parsed)
+        }
+      }
+    }
+    // first wins per name (roots already ordered by rank)
+    const seen = new Set<string>()
+    return result.filter(s => !seen.has(s.name) && seen.add(s.name) !== undefined)
+  }
+
+  private async parse(path: string, source: string): Promise<FoundSkill | undefined> {
+    try {
+      await access(path)
+      const raw = await readFile(path, 'utf8')
+      const parsed = parseFrontmatter(raw)
+      if (!parsed) return undefined
+      const name = parsed.data['name']
+      const description = parsed.data['description']
+      if (typeof name !== 'string' || typeof description !== 'string') return undefined
+      const disableModel = parsed.data['disable-model-invocation']
+      const userInv = parsed.data['user-invocable']
+      return {
+        name,
+        description,
+        source,
+        path,
+        modelInvocable: disableModel !== true,
+        userInvocable: userInv !== false,
+      }
+    } catch {
+      return undefined
+    }
+  }
+}
+
+function resolveDshHomeSafe(): string {
+  return resolve(process.env.DSH_HOME ?? join(homedir(), '.dsh'))
 }
 
 /**
@@ -120,13 +187,11 @@ export async function toggleSkillFile(filePath: string, enabled: boolean, dryRun
   if (!parsed) throw new Error(`skill file ${filePath} missing frontmatter`)
 
   const data = parsed.data as Record<string, unknown>
-  // Validate legacy keys are rejected per spec
   if ('disableModelInvocation' in data || 'modelInvocable' in data) {
     throw new Error(`skill ${filePath} uses legacy frontmatter key`)
   }
 
   if (enabled) {
-    // enabled => remove disable flag (or set false)
     if ('disable-model-invocation' in data) delete data['disable-model-invocation']
   } else {
     data['disable-model-invocation'] = true

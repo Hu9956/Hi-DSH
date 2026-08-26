@@ -1,8 +1,16 @@
 /**
  * Hi-DSH Skill Board — Host side
- * Visual toggle for skills: disabling removes skill from model catalog (hot, saves tokens).
- * Implements toggle by editing SKILL.md frontmatter `disable-model-invocation`.
- * Relies on skill-filesystem watcher + tool-skill catalog replacement (agent/pre-step).
+ *
+ * Visual toggle for skills: disabling removes the skill from the model catalog
+ * (hot, saves tokens) by editing SKILL.md frontmatter `disable-model-invocation`.
+ * The per-preset skill-filesystem watchers pick up file changes and the
+ * tool-skill catalog replacement reaches the model on the next step — no restart.
+ *
+ * Listing scans the same roots the local provider scans (project, custom,
+ * user-dsh, user-agents, bundled) because the desktop web composition disables
+ * the host-plane skill-filesystem row: the global registry layer is empty and
+ * per-preset providers are scope-scoped, so a plain registry snapshot cannot
+ * enumerate installed skills for a management surface.
  */
 import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "dsh-plugin-skill-board";
@@ -11,8 +19,7 @@ export interface SkillBoardItem {
     name: string;
     description: string;
     source: string;
-    provider: string;
-    path?: string;
+    path: string;
     modelInvocable: boolean;
     userInvocable: boolean;
 }
@@ -25,16 +32,16 @@ export declare class SkillBoardService {
     private ctx;
     private config;
     constructor(ctx: Context, config: Config);
+    /** Skill roots mirroring the local provider's default roots (user level). */
+    private roots;
     list(): Promise<SkillBoardItem[]>;
-    /**
-     * Toggle model-invocable for a skill file.
-     * @param name skill name
-     * @param enabled true = model can invoke, false = hidden from catalog (saves tokens)
-     */
     toggle(name: string, enabled: boolean): Promise<{
         path: string;
         enabled: boolean;
     }>;
+    /** Scan user roots for bundle (dir/SKILL.md) and flat (<name>.md) skills. */
+    private scan;
+    private parse;
 }
 /**
  * Patch SKILL.md frontmatter to set disable-model-invocation.
