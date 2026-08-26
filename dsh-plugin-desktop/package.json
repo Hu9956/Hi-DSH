@@ -286,8 +286,8 @@
     "vitest": "4.1.8"
   },
   "build": {
-    "appId": "ai.deepseek.dsh.desktop",
-    "productName": "DSH Desktop",
+    "appId": "com.kunwei.hidsh",
+    "productName": "Hi-DSH",
     "asar": true,
     "asarUnpack": [
       "package.json",
@@ -348,7 +348,7 @@
           ]
         }
       ],
-      "artifactName": "DSH-Desktop-${version}-${arch}-Portable.${ext}",
+      "artifactName": "Hi-DSH-${version}-${arch}-Portable.${ext}",
       "icon": "build/app-icon.png"
     },
     "nsis": {
@@ -360,9 +360,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "differentialPackage": false,
-      "shortcutName": "DSH Desktop",
+      "shortcutName": "Hi-DSH",
       "useZip": false,
-      "artifactName": "DSH-Desktop-${version}-${arch}-Setup.${ext}"
+      "artifactName": "Hi-DSH-${version}-${arch}-Setup.${ext}"
     },
     "linux": {
       "target": [

@@ -101,7 +101,7 @@ import {
 } from './relaunch-arguments.ts'
 
 const BIN_NAME = 'dsh-plugin-desktop'
-const PRODUCT_NAME = 'DSH Desktop'
+const PRODUCT_NAME = 'Hi-DSH'
 
 class RendererStartupFailure extends Error {
   constructor(

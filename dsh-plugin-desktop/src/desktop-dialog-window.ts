@@ -214,7 +214,7 @@ export async function showDesktopMessageBox(
 ): Promise<MessageBoxReturnValue> {
   const result = await showDesktopDialog({
     type: options.type ?? 'none',
-    title: options.title ?? 'DSH Desktop',
+    title: options.title ?? 'Hi-DSH',
     message: options.message,
     ...(options.detail === undefined ? {} : { detail: options.detail }),
     buttons: options.buttons ?? ['OK'],

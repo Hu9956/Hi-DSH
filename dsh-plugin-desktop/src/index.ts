@@ -355,8 +355,8 @@ export function apply(ctx: Context, config: Config): void {
           material,
           runtime.windowsBuild,
         ),
-        productName: 'DSH Desktop',
-        windowTitle: 'DeepSeek Harness Desktop',
+        productName: 'Hi-DSH',
+        windowTitle: 'Hi-DSH',
         iconPath,
         trayIcons,
         readLocalePreference: () => {
