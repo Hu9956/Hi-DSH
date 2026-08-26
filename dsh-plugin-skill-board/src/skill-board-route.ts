@@ -33,8 +33,12 @@ function isAllowed(req: IncomingMessage, expectedOrigin: string): boolean {
     if (req.headers.host?.toLowerCase() !== expected.host.toLowerCase()) return false
     const origin = req.headers.origin
     if (origin !== undefined) return origin === expectedOrigin
-    // GET may omit Origin, check sec-fetch-site
-    if (req.method === 'GET') return req.headers['sec-fetch-site'] === 'same-origin' || req.headers['sec-fetch-site'] === undefined
+    // GET may omit Origin: allow same-origin fetches and top-level address-bar
+    // navigations (sec-fetch-site: none). Cross-site GETs are still rejected.
+    if (req.method === 'GET') {
+      const site = req.headers['sec-fetch-site']
+      return site === 'same-origin' || site === 'none' || site === undefined
+    }
     return false
   } catch {
     return false

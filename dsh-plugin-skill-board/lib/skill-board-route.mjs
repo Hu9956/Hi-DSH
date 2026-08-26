@@ -22,7 +22,10 @@ function isAllowed(req, expectedOrigin) {
 		if (req.headers.host?.toLowerCase() !== expected.host.toLowerCase()) return false;
 		const origin = req.headers.origin;
 		if (origin !== void 0) return origin === expectedOrigin;
-		if (req.method === "GET") return req.headers["sec-fetch-site"] === "same-origin" || req.headers["sec-fetch-site"] === void 0;
+		if (req.method === "GET") {
+			const site = req.headers["sec-fetch-site"];
+			return site === "same-origin" || site === "none" || site === void 0;
+		}
 		return false;
 	} catch {
 		return false;
