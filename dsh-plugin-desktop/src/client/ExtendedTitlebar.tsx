@@ -1,7 +1,7 @@
 /** Independent Desktop frame portalled above the upstream content viewport. */
 
 import { createPortal } from 'react-dom'
-import { LayoutTemplate, PanelTop, RefreshCw, Sparkles } from 'lucide-react'
+import { Blocks, LayoutTemplate, PanelTop, RefreshCw, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import type {
   InjectFace, PropsLocale, PropsRuntime,
@@ -188,6 +188,15 @@ export function DesktopFrameTitlebar({ api, environment, setMode, t }: DesktopFr
         />
       </div>
       <div className="dshDesktopFrameActions">
+        <button
+          type="button"
+          className="dshDesktopTitlebarIconButton"
+          title="Hi-DSH 技能开关"
+          aria-label="Hi-DSH 技能开关"
+          onClick={() => { window.open('/hi-dsh/skill-board', '_blank') }}
+        >
+          <Blocks aria-hidden="true" />
+        </button>
         <DesktopNativeActions api={api} t={t} placement="titlebar" />
       </div>
     </header>
