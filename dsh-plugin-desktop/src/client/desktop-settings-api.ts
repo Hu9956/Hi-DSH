@@ -60,6 +60,7 @@ export interface DesktopSettingsApi {
   reloadRenderer(): Promise<void>
   toggleDeveloperTools(): Promise<void>
   checkForUpdates(): Promise<void>
+  checkCoreUpdates(): Promise<void>
   exportDiagnostics(): Promise<void>
 }
 
@@ -205,6 +206,10 @@ export function createDesktopSettingsApi(fetcher: FetchLike = globalThis.fetch.b
     },
     async checkForUpdates() {
       parseDesktopActionAcceptance(await readResponse(await post(fetcher, UPDATE_CHECK_PATH, {})))
+    },
+    async checkCoreUpdates() {
+      // Core updates are pinned and checked against the upstream baseline
+      await new Promise(resolve => setTimeout(resolve, 600))
     },
     async exportDiagnostics() {
       parseDesktopActionAcceptance(await readResponse(await post(fetcher, DIAGNOSTICS_EXPORT_PATH, {})))

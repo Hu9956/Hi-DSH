@@ -38,6 +38,31 @@ export type {
   DesktopTerminalSettingsActionInjected,
   DesktopTerminalSettingsActionProps,
 } from './DesktopTerminalSettingsAction.tsx'
+export { DesktopUpdateCheckRow } from './DesktopUpdateCheckRow.tsx'
+export type {
+  DesktopUpdateCheckRowInjected,
+  DesktopUpdateCheckRowProps,
+} from './DesktopUpdateCheckRow.tsx'
+export { DesktopComplianceCheckerTab } from './DesktopComplianceCheckerTab.tsx'
+export type {
+  DesktopComplianceCheckerTabProps,
+} from './DesktopComplianceCheckerTab.tsx'
+export { DesktopInstalledPluginsTab } from './DesktopInstalledPluginsTab.tsx'
+export type {
+  DesktopInstalledPluginsTabProps,
+} from './DesktopInstalledPluginsTab.tsx'
+export { DesktopPluginMarketTab } from './DesktopPluginMarketTab.tsx'
+export type {
+  DesktopPluginMarketTabProps,
+} from './DesktopPluginMarketTab.tsx'
+export { DesktopSkillsTab } from './DesktopSkillsTab.tsx'
+export type {
+  DesktopSkillsTabProps,
+} from './DesktopSkillsTab.tsx'
+export { DesktopConnectorsTab } from './DesktopConnectorsTab.tsx'
+export type {
+  DesktopConnectorsTabProps,
+} from './DesktopConnectorsTab.tsx'
 export type {
   DesktopNotificationSettings,
   DesktopSettingsSectionInjected,

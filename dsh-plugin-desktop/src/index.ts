@@ -54,6 +54,28 @@ import {
   handleDesktopSettingsRequest,
   handleDesktopTerminalOpenRequest,
 } from './desktop-settings-route.ts'
+import {
+  McpConfigService,
+} from './mcp-service.ts'
+import {
+  MCP_LIST_PATH,
+  MCP_SAVE_PATH,
+  MCP_DELETE_PATH,
+  MCP_TEST_PATH,
+  handleMcpListRequest,
+  handleMcpSaveRequest,
+  handleMcpDeleteRequest,
+  handleMcpTestRequest,
+} from './mcp-routes.ts'
+import {
+  SkillBoardService,
+} from './skill-board-service.ts'
+import {
+  SKILL_BOARD_LIST_PATH,
+  SKILL_BOARD_TOGGLE_PATH,
+  handleSkillBoardListRequest,
+  handleSkillBoardToggleRequest,
+} from './skill-board-routes.ts'
 import type {} from './desktop-settings-controller.ts'
 import { desktopBootRecoveryInjections } from './desktop-boot-recovery.ts'
 import type { DesktopShellMode } from './runtime.ts'
@@ -265,6 +287,56 @@ export function apply(ctx: Context, config: Config): void {
       ),
     }),
     'dsh-plugin-desktop: renderer boot report route',
+  )
+  const mcpService = new McpConfigService()
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: MCP_LIST_PATH,
+      handler: (req, res) => handleMcpListRequest(req, res, rendererOrigin, mcpService),
+    }),
+    'dsh-plugin-desktop: mcp list route',
+  )
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: MCP_SAVE_PATH,
+      handler: (req, res) => handleMcpSaveRequest(req, res, rendererOrigin, mcpService),
+    }),
+    'dsh-plugin-desktop: mcp save route',
+  )
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: MCP_DELETE_PATH,
+      handler: (req, res) => handleMcpDeleteRequest(req, res, rendererOrigin, mcpService),
+    }),
+    'dsh-plugin-desktop: mcp delete route',
+  )
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: MCP_TEST_PATH,
+      handler: (req, res) => handleMcpTestRequest(req, res, rendererOrigin, mcpService),
+    }),
+    'dsh-plugin-desktop: mcp test route',
+  )
+  const skillBoardService = new SkillBoardService()
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: SKILL_BOARD_LIST_PATH,
+      handler: (req, res) => handleSkillBoardListRequest(req, res, rendererOrigin, skillBoardService),
+    }),
+    'dsh-plugin-desktop: skill-board list route',
+  )
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: SKILL_BOARD_TOGGLE_PATH,
+      handler: (req, res) => handleSkillBoardToggleRequest(req, res, rendererOrigin, skillBoardService),
+    }),
+    'dsh-plugin-desktop: skill-board toggle route',
   )
   if (runtime.platform === 'win32') {
     ctx.effect(

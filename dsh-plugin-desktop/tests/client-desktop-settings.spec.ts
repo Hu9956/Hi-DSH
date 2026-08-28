@@ -14,6 +14,10 @@ import {
 } from '../src/client/ExtendedTitlebar.tsx'
 import { DesktopSettingsSection } from '../src/client/DesktopSettingsSection.tsx'
 import { DesktopTerminalSettingsAction } from '../src/client/DesktopTerminalSettingsAction.tsx'
+import { DesktopUpdateCheckRow } from '../src/client/DesktopUpdateCheckRow.tsx'
+import { DesktopComplianceCheckerTab } from '../src/client/DesktopComplianceCheckerTab.tsx'
+import { DesktopSkillsTab } from '../src/client/DesktopSkillsTab.tsx'
+import { DesktopConnectorsTab } from '../src/client/DesktopConnectorsTab.tsx'
 import {
   createDesktopSettingsApi,
   desktopSettingsPaths,
@@ -323,6 +327,7 @@ describe('Desktop settings Slot registration', () => {
     expect(bind).toHaveBeenNthCalledWith(2, { namespace: DESKTOP_NOTIFICATIONS_SETTINGS_NAMESPACE })
     expect(inject).toHaveBeenCalledWith('settings.section', expect.any(Function))
     expect(inject).toHaveBeenCalledWith('settings.action', expect.any(Function))
+    expect(inject).toHaveBeenCalledWith('settings.general.item', expect.any(Function))
     const [options, component] = register.mock.calls[0] as unknown as [
       { id: string; order: number; locale: string; label: () => string; inject: () => Record<string, unknown> },
       unknown,
@@ -353,6 +358,59 @@ describe('Desktop settings Slot registration', () => {
     })
     expect(actionOptions.inject()).toHaveProperty('api')
     expect(actionComponent).toBe(DesktopTerminalSettingsAction)
+
+    const [updateOptions, updateComponent] = register.mock.calls[2] as unknown as [
+      { id: string; order: number; locale: string; inject: () => Record<string, unknown> },
+      unknown,
+    ]
+    expect(updateOptions).toMatchObject({
+      name: 'settings.general.item',
+      id: 'desktop-update-check',
+      order: 200,
+      locale: DESKTOP_SETTINGS_LOCALE_NAMESPACE,
+    })
+    expect(updateOptions.inject()).toHaveProperty('api')
+    expect(updateComponent).toBe(DesktopUpdateCheckRow)
+
+    const [complianceTabOptions, complianceTabComponent] = register.mock.calls[3] as unknown as [
+      { id: string; order: number; locale: string; inject: () => Record<string, unknown> },
+      unknown,
+    ]
+    expect(complianceTabOptions).toMatchObject({
+      name: 'settings.plugins.tab',
+      id: 'compliance-checker',
+      order: 5,
+      locale: DESKTOP_SETTINGS_LOCALE_NAMESPACE,
+    })
+    expect(complianceTabComponent).toBe(DesktopComplianceCheckerTab)
+
+    const updateMarkup = renderToStaticMarkup(createElement(DesktopUpdateCheckRow, {
+      api: {
+        checkForUpdates: vi.fn(async () => {}),
+        checkCoreUpdates: vi.fn(async () => {}),
+      },
+      t: (key: DesktopSettingsLocaleKey) => en[key],
+    }))
+    expect(updateMarkup).toContain('dshDesktopUpdateCheckContainer')
+    expect(updateMarkup).toContain('Hi-DSH Desktop App')
+
+    const complianceMarkup = renderToStaticMarkup(createElement(DesktopComplianceCheckerTab, {
+      t: (key: DesktopSettingsLocaleKey) => en[key],
+    }))
+    expect(complianceMarkup).toContain('dshComplianceContainer')
+
+    const skillsMarkup = renderToStaticMarkup(createElement(DesktopSkillsTab, {
+      t: (key: DesktopSettingsLocaleKey) => en[key],
+    }))
+    expect(skillsMarkup).toContain('dshDesktopSettingsSection')
+    expect(skillsMarkup).toContain('Installed')
+
+    const connectorsMarkup = renderToStaticMarkup(createElement(DesktopConnectorsTab, {
+      t: (key: DesktopSettingsLocaleKey) => en[key],
+    }))
+    expect(connectorsMarkup).toContain('dshDesktopSettingsSection')
+    expect(connectorsMarkup).toContain('Add MCP Server')
+
     await control.setMode('extended')
     expect(scope.set).toHaveBeenCalledWith('mode', 'extended')
   })

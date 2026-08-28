@@ -23,6 +23,10 @@
       "types": "./lib/types/index.d.ts",
       "default": "./lib/index.js"
     },
+    "./compliance-checker": {
+      "types": "./lib/types/compliance-checker.d.ts",
+      "default": "./lib/compliance-checker.js"
+    },
     "./profile": {
       "types": "./lib/types/profile.d.ts",
       "default": "./lib/profile.js"
@@ -74,6 +78,10 @@
     "./updates": {
       "types": "./lib/types/updates.d.ts",
       "default": "./lib/updates.js"
+    },
+    "./mcp-service": {
+      "types": "./lib/types/mcp-service.d.ts",
+      "default": "./lib/mcp-service.js"
     },
     "./package.json": "./package.json"
   },
