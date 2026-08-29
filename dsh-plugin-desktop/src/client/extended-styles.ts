@@ -465,28 +465,19 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
 }
 /* Conversation composer: upstream paints a 22px pill with a 10%-black border
    that reads as a dirty halo on the T3 base. The card is tagged
-   data-dsh-t3-surface by the client (no stable upstream anchor) — the glass
-   frame keeps its own ring, so the card goes borderless (a transparent border
-   keeps upstream's own suppressed) and shadowless (upstream paints a soft
-   shadow that would halo inside the glass): the frame's hairline stays the
-   only outline, with the concentric inner radius (22 − 1 − 4). */
+   data-dsh-t3-surface by the client (no stable upstream anchor) — restyle to
+   the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
   /* Match the card to the conversation's native 748px measure; the frame
      ring (2×4px padding + 2×1px border) then puts the assembly at 758px. */
   max-width: 748px;
-  border: 1px solid transparent;
-  border-radius: 17px;
-  box-shadow: none;
+  border: 1px solid var(--dshT3-border);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
 }
-/* Glass frame around the composer card (the card's direct parent): a frosted
-   neutral slab, T3-style — our base is white, so the reference's blue glass
-   (wallpaper transmitted through frost) has nothing to transmit and a painted
-   hue reads as either dirty white or blue paint. Depth comes from value, not
-   hue: a committed cool-neutral fill (≈rgb(236,239,243) over the base, ~18
-   steps under the white card) with a matching neutral hairline, at 0.7 alpha
-   so the backdrop blur still ghosts through. T3 nested-radius rule
-   (frame 22 > card 17) and a capped centered width so collapsing the sidebar
-   cannot stretch it. */
+/* Glass frame around the composer card (the card's direct parent): a
+   white-alpha ring with the T3 nested-radius rule (frame 22 > card 14) and a
+   capped centered width so collapsing the sidebar cannot stretch it. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
   box-sizing: border-box;
   width: 100%;
@@ -495,17 +486,21 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [da
   margin-bottom: 8px;
   margin-left: auto;
   padding: 4px;
-  border: 1px solid rgba(35, 45, 60, 0.10);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 22px;
-  background: rgba(229, 233, 239, 0.7);
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(14px) saturate(1.15);
   -webkit-backdrop-filter: blur(14px) saturate(1.15);
-  box-shadow: 0 4px 16px color-mix(in srgb, #000 6%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, #000 5%, transparent);
 }
 body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
-  border-color: rgba(238, 243, 245, 0.12);
-  background: rgba(238, 243, 245, 0.10);
+  border-color: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
   box-shadow: 0 4px 16px color-mix(in srgb, #000 30%, transparent);
+}
+body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
+  border-color: var(--dshT3-border-strong);
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 25%, transparent), 0 4px 14px color-mix(in srgb, #000 30%, transparent);
 }
 /* The composer seat lays a hardcoded white fade so scrolling content
    dissolves under the input; on the T3 base that read as a dirty band around
