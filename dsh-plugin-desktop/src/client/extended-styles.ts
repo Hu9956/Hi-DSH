@@ -464,6 +464,9 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
    data-dsh-t3-surface by the client (no stable upstream anchor) — restyle to
    the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
+  /* Step the card down by the frame ring (2×4px padding + 2×1px border) so
+     card + frame together match the upstream composer's native 780px. */
+  max-width: 770px;
   border: 1px solid var(--dshT3-border);
   border-radius: 14px;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
@@ -471,13 +474,12 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [da
 /* Glass frame around the composer card (the card's direct parent): a
    white-alpha ring with the T3 nested-radius rule (frame 22 > card 14) and a
    capped centered width so collapsing the sidebar cannot stretch it. The cap
-   is the upstream composer's own native width (780px) plus this ring (2×4px
-   padding + 2×1px border), so the card fills the content box and the frame
-   sits on the composer's native footprint. */
+   keeps the whole assembly on the upstream composer's native 780px footprint
+   (card 770 + this ring's 10px). */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
   box-sizing: border-box;
   width: 100%;
-  max-width: 790px;
+  max-width: 780px;
   margin-right: auto;
   margin-left: auto;
   padding: 4px;
