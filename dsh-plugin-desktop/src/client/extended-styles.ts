@@ -463,25 +463,29 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
    that reads as a dirty halo on the T3 base. The card is tagged
    data-dsh-t3-surface by the client (no stable upstream anchor) — restyle to
    the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
+/* Shared readable measure with the message list: upstream caps its message
+   column at 748px (46.75rem) and insets it 64px inline (two nested 32px
+   paddings on the scroll wrappers). The composer mirrors that exact box —
+   same 64px inline offset, same 748px cap, same shrink behavior — so input
+   and content stay edge-aligned at every width. Do NOT cap the conversation
+   root itself: the message column's own cap would double-dip and squeeze
+   messages narrower than their native measure. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
   /* Step the card down by the frame ring (2×4px padding + 2×1px border) so
-     card + frame together match the upstream composer's native 780px. */
-  max-width: 770px;
+     card + frame together match the conversation's 748px measure. */
+  max-width: 738px;
   border: 1px solid var(--dshT3-border);
   border-radius: 14px;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
 }
 /* Glass frame around the composer card (the card's direct parent): a
-   white-alpha ring with the T3 nested-radius rule (frame 22 > card 14) and a
-   capped centered width so collapsing the sidebar cannot stretch it. The cap
-   keeps the whole assembly on the upstream composer's native 780px footprint
-   (card 770 + this ring's 10px). */
+   white-alpha ring with the T3 nested-radius rule (frame 22 > card 14). */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
   box-sizing: border-box;
-  width: 100%;
-  max-width: 780px;
+  width: calc(100% - 128px);
+  max-width: 748px;
   margin-right: auto;
-  margin-left: auto;
+  margin-left: 64px;
   padding: 4px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 22px;
