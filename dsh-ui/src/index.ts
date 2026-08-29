@@ -27,3 +27,11 @@ export { Tabs, type TabsProps, type TabOption } from './Tabs.tsx'
 export { Skeleton, type SkeletonProps } from './Skeleton.tsx'
 export { ensureUiStyles } from './install.ts'
 export { tokensCss } from './tokens.ts'
+export {
+  t3codePalette,
+  t3codeLight,
+  t3codeDark,
+  t3codeTokensCss,
+  t3codeSource,
+  dshT3ToT3CodeMap,
+} from './t3code.tokens.ts'

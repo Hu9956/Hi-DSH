@@ -31,6 +31,7 @@
 | [架构说明](architecture.md) | Electron、Host、loopback Web、profile 和打包之间的关系 |
 | [Desktop service 参考](../dsh-plugin-desktop/docs/plugin-services.md) | `desktopProfiles`、`desktopPnpm` 的稳定 contract 和 TypeScript 示例 |
 | [包级参考](../dsh-plugin-desktop/README.md) | 完整的构建、运行、发布和已知限制 |
+| [T3 Code 配色权威提取](t3code-palette.md) | `pingdotgg/t3code` 默认 `zinc / neutral-950` 双主题 Token 原文、表与可复制 CSS/TS/JSON |
 
 ## README 文件怎么分工
 

@@ -37,7 +37,7 @@ describe('dsh-ui primitives', () => {
     // Token declarations themselves, not merely var() references.
     expect(css).toContain(':root {')
     expect(css).toContain('--dshT3-bg: #fcfcfc')
-    expect(css).toContain('--dshT3-bg: #0a0a0a')
+    expect(css).toContain('--dshT3-bg: #09090b')
   })
 
   it('maps button variants to their classes', () => {
