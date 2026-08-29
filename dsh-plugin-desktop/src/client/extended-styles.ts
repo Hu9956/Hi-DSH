@@ -412,7 +412,7 @@ body[data-dsh-desktop-mode="extended"]:not([data-dsh-desktop-material="off"]) {
 /* T3 sidebar (compatibility, material off): the upstream AppFrame becomes the
    Claude-style two-layer composition — ONE base sheet fills the frame (and the
    titlebar above it) in the conversation's own tone, and the sidebar column
-   floats ON that sheet as a rounded card (~14px sheet gap on top/left/bottom,
+   floats ON that sheet as a rounded card (uniform sheet gap on top/left/bottom,
    flush right against the content behind a hairline). The base references the
    upstream bg-base alias — the same tone the conversation surface paints — so
    the sheet and the content stay one color in both host themes; the gap
@@ -421,13 +421,17 @@ body[data-dsh-desktop-mode="extended"]:not([data-dsh-desktop-material="off"]) {
    only upstream-stable structural signature; the selectors simply stop
    matching where AppFrame is not mounted. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] {
-  --dshT3-sidebar-gap: 14px;
+  --dshT3-sidebar-gap: 8px;
   --dshT3-sidebar-radius: 16px;
   --dsh-desktop-frame-fill: var(--dsw-alias-bg-base);
-  --dshT3-sidebar-shadow: 0 2px 10px color-mix(in srgb, #000 4%, transparent), 6px 0 24px color-mix(in srgb, #000 4%, transparent);
+  /* Ambient only: a directional right-side shadow reads as a gray band in the
+     ~30px channel beside the composer, and the composer seat's opaque plateau
+     clips it mid-run into a visible seam. The hairline carries the right-edge
+     separation. */
+  --dshT3-sidebar-shadow: 0 2px 10px color-mix(in srgb, #000 4%, transparent);
 }
 body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] {
-  --dshT3-sidebar-shadow: 0 2px 10px color-mix(in srgb, #000 35%, transparent), 6px 0 24px color-mix(in srgb, #000 35%, transparent);
+  --dshT3-sidebar-shadow: 0 2px 10px color-mix(in srgb, #000 35%, transparent);
 }
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) {
   background: var(--dsw-alias-bg-base);
@@ -479,6 +483,7 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [da
   width: 100%;
   max-width: 758px;
   margin-right: auto;
+  margin-bottom: 8px;
   margin-left: auto;
   padding: 4px;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -497,11 +502,13 @@ body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop
   border-color: var(--dshT3-border-strong);
   box-shadow: 0 1px 2px color-mix(in srgb, #000 25%, transparent), 0 4px 14px color-mix(in srgb, #000 30%, transparent);
 }
-/* The composer seat lays a white fade so scrolling content dissolves under
-   the input; on the T3 base that fade reads as a dirty band around the card
-   (both themes), so the seat shows the bare base like the rest of the shell. */
+/* The composer seat lays a hardcoded white fade so scrolling content
+   dissolves under the input; on the T3 base that read as a dirty band around
+   the card. Restore the dissolve with a base-toned fade instead: content ends
+   cleanly at the composer dock instead of clipping at the window edge, and
+   the alias tracks both host themes. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-seat"] {
-  background-image: none;
+  background-image: linear-gradient(to top, var(--dsw-alias-bg-base) 30px, transparent 40px);
 }
 `
 
