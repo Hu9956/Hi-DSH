@@ -366,7 +366,7 @@ describe('independent Desktop frame', () => {
       expect(css).toMatch(/> div:first-child \{[^}]*margin: var\(--dshT3-sidebar-gap\) 0 var\(--dshT3-sidebar-gap\) var\(--dshT3-sidebar-gap\);[^}]*border-radius: var\(--dshT3-sidebar-radius\);[^}]*background: var\(--dshT3-surface\);/)
       expect(css).toMatch(/> div:first-child div\[style\*="width"\] \{[^}]*width: 100% !important;/)
       expect(css).toMatch(/\[data-dsh-t3-surface="composer"\] \{[^}]*border: 1px solid var\(--dshT3-border\);[^}]*border-radius: 14px;/)
-      expect(css).toMatch(/\[data-dsh-t3-surface="composer-frame"\] \{[^}]*max-width: 800px;[^}]*margin-right: auto;[^}]*margin-left: auto;[^}]*padding: 4px;[^}]*border-radius: 22px;/)
+      expect(css).toMatch(/\[data-dsh-t3-surface="composer-frame"\] \{[^}]*max-width: 790px;[^}]*margin-right: auto;[^}]*margin-left: auto;[^}]*padding: 4px;[^}]*border-radius: 22px;/)
       expect(appendChild).toHaveBeenCalledWith(style)
       dispose()
       expect(remove).toHaveBeenCalledOnce()

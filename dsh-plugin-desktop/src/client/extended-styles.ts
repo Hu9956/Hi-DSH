@@ -470,11 +470,14 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [da
 }
 /* Glass frame around the composer card (the card's direct parent): a
    white-alpha ring with the T3 nested-radius rule (frame 22 > card 14) and a
-   capped centered width so collapsing the sidebar cannot stretch it. */
+   capped centered width so collapsing the sidebar cannot stretch it. The cap
+   is the upstream composer's own native width (780px) plus this ring (2×4px
+   padding + 2×1px border), so the card fills the content box and the frame
+   sits on the composer's native footprint. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
   box-sizing: border-box;
   width: 100%;
-  max-width: 800px;
+  max-width: 790px;
   margin-right: auto;
   margin-left: auto;
   padding: 4px;
