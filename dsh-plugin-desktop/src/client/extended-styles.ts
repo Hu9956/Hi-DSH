@@ -471,9 +471,6 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
    root itself: the message column's own cap would double-dip and squeeze
    messages narrower than their native measure. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
-  /* Step the card down by the frame ring (2×4px padding + 2×1px border) so
-     card + frame together match the conversation's 748px measure. */
-  max-width: 738px;
   border: 1px solid var(--dshT3-border);
   border-radius: 14px;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
