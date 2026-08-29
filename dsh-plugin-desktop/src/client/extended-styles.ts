@@ -464,6 +464,9 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
    data-dsh-t3-surface by the client (no stable upstream anchor) — restyle to
    the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
+  /* Step the card down by the frame ring (2×4px padding + 2×1px border) so
+     card + frame together fill the conversation's 748px measure exactly. */
+  max-width: 738px;
   border: 1px solid var(--dshT3-border);
   border-radius: 14px;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
@@ -474,7 +477,7 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [da
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
   box-sizing: border-box;
   width: 100%;
-  max-width: 800px;
+  max-width: 748px;
   margin-right: auto;
   margin-left: auto;
   padding: 4px;
