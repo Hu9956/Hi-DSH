@@ -469,10 +469,11 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
    the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
   /* Match the card to the conversation's native 748px measure; the frame
-     ring (2×4px padding + 2×1px border) then puts the assembly at 758px. */
+     ring (2×4px padding + 2×1px border) then puts the assembly at 758px.
+     Radius is concentric with the kept glass ring: 22 − 1 border − 4 padding. */
   max-width: 748px;
   border: 1px solid var(--dshT3-border);
-  border-radius: 14px;
+  border-radius: 17px;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
 }
 /* Glass frame around the composer card (the card's direct parent): a
@@ -495,12 +496,19 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [da
 }
 body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
   border-color: rgba(255, 255, 255, 0.10);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
   box-shadow: 0 4px 16px color-mix(in srgb, #000 30%, transparent);
 }
 body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
+  /* Upstream hardcodes the dark card fill #2C2C2E, which floats ~23 steps
+     above the T3 base (rgb(21,21,23)) and reads as a stray bright slab —
+     light mode never showed this because upstream's white fill coincides
+     with the T3 base. T3's own dark composer sits ~9 steps over its base
+     (measured rgb(18) on rgb(9)): a 4% lift ≈ rgb(30) matches that step,
+     hierarchy carried by the hairline. */
+  background: color-mix(in srgb, var(--dsw-alias-bg-base) 96%, #fff 4%);
   border-color: var(--dshT3-border-strong);
-  box-shadow: 0 1px 2px color-mix(in srgb, #000 25%, transparent), 0 4px 14px color-mix(in srgb, #000 30%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 15%, transparent), 0 4px 14px color-mix(in srgb, #000 20%, transparent);
 }
 /* The composer seat lays a hardcoded white fade so scrolling content
    dissolves under the input; on the T3 base that read as a dirty band around
@@ -509,6 +517,52 @@ body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop
    the alias tracks both host themes. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-seat"] {
   background-image: linear-gradient(to top, var(--dsw-alias-bg-base) 30px, transparent 40px);
+}
+/* Upstream paints a like/dislike pair under every assistant message; unused
+   here, so the pair is dropped and copy/fork stay. Anchored on the locale
+   strings — semantic and stable across hashed-class rebuilds — inside the
+   frame anchor so nothing outside the conversation can match. If upstream
+   ever renames the copy, the buttons reappear harmlessly. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) button[aria-label="好的回答"],
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) button[aria-label="有问题的回答"] {
+  display: none;
+}
+/* Swap the message footer's defaults: upstream shows the copy/fork buttons
+   and hides the timestamp meta (via [data-time-hover-root]:hover); KunWei
+   runs it the other way — meta always on, actions revealed by hovering the
+   same root or focusing a button. Each row type mirrors the other: assistant
+   rows lead with the meta (order −1), user rows close with it (order 1),
+   both hugging their content edge — the class suffixes (_timeStart/_timeEnd)
+   are the CSS-module local names, so they survive per-build hash churn.
+   Spacing stays upstream's own constants: the row's 10px gap plus the meta's
+   12px padding, rotated to the face that now faces the buttons; timeEnd also
+   gets 6px on its new left face because upstream pulls the actions row 6px
+   left of the flowItem so the 28px buttons' icons align with the content —
+   an offset the meta text must repay to sit on the content column. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) [class$="_timeStart"] {
+  opacity: 1 !important;
+  order: 1;
+  padding-left: 12px;
+  padding-right: 0;
+}
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) [class$="_timeEnd"] {
+  opacity: 1 !important;
+  order: -1;
+  padding-left: 6px;
+  padding-right: 12px;
+}
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) button[aria-label="复制"],
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) button[aria-label="在新对话中分支"] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 80ms ease;
+}
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) [data-time-hover-root]:hover button[aria-label="复制"],
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) [data-time-hover-root]:hover button[aria-label="在新对话中分支"],
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) button[aria-label="复制"]:focus-visible,
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) button[aria-label="在新对话中分支"]:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 `
 
