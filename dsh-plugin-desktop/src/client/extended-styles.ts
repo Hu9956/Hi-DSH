@@ -447,10 +447,11 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
   padding-right: 10px;
   /* The center column paints after this one in DOM order, so its opaque
      surface would slice the card's shadow into the gap strips only — visible
-     seams at the flush corners. Lift the card so its shadow renders over the
-     content background and fades continuously, Claude-style. */
+     seams at the flush corners. position:relative alone is enough to lift the
+     paint above the static content (settings dialogs portal INTO this column
+     with z-index 1000, so it must NOT become a stacking context: a z-index
+     here would trap them below the composer's own z-index:1). */
   position: relative;
-  z-index: 1;
 }
 /* SidebarRoot pins its width inline to the grid track (the slot's live width
    prop), overflowing the inset card and clipping at its edge; inline styles
