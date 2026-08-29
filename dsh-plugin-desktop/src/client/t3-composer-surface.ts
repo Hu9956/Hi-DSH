@@ -64,6 +64,13 @@ export function markComposerSurfaces(root: ParentNode): Element[] {
       ;(card as HTMLElement).dataset.dshT3Surface = 'composer'
       tagged.push(card)
     }
+    // The card's direct parent is the frame candidate (glass ring around the
+    // card); it mounts with the card, so tagging it here keeps them in sync.
+    const frame = card.parentElement
+    if (frame !== null && (frame as HTMLElement).dataset.dshT3Surface === undefined) {
+      ;(frame as HTMLElement).dataset.dshT3Surface = 'composer-frame'
+      tagged.push(frame)
+    }
     if (card.closest(`[${COMPOSER_SURFACE_ATTRIBUTE}="composer-seat"]`) !== null) continue
     const seat = composerSeatFrom(card, element => ({
       backgroundImage: getComputedStyle(element).backgroundImage,

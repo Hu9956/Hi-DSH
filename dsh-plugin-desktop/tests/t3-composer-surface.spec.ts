@@ -93,11 +93,14 @@ describe('composer surface tagging', () => {
     expect(composerCardFrom(input as unknown as Element, styleOf)).toBeNull()
   })
 
-  it('tags composer cards, their gradient seats, skips overlays and tagged trees', () => {
+  it('tags composer cards, their frames and gradient seats, skips overlays and tagged trees', () => {
     const seat = fakeEl({ img: 'linear-gradient(transparent 0px, rgb(255, 255, 255) 36px)' })
+    const frame = fakeEl()
     const card = fakeEl({ r: '22px', bg: 'rgb(255, 255, 255)' })
-    seat.children.push(card)
-    card.parent = seat
+    frame.children.push(card)
+    card.parent = frame
+    seat.children.push(frame)
+    frame.parent = seat
     const input = textarea(card)
     const overlay = fakeEl()
     overlay.overlay = true
@@ -109,8 +112,9 @@ describe('composer surface tagging', () => {
     installFakeDom(root)
 
     const tagged = markComposerSurfaces(root as unknown as ParentNode)
-    expect(tagged).toEqual([card, seat])
+    expect(tagged).toEqual([card, frame, seat])
     expect((card as unknown as { dataset: Record<string, string> }).dataset.dshT3Surface).toBe('composer')
+    expect((frame as unknown as { dataset: Record<string, string> }).dataset.dshT3Surface).toBe('composer-frame')
     expect((seat as unknown as { dataset: Record<string, string> }).dataset.dshT3Surface).toBe('composer-seat')
     expect('dshT3Surface' in overlayCard.dataset).toBe(false)
     void input
@@ -123,14 +127,17 @@ describe('composer surface tagging', () => {
     // Regression: the seat wrapper can mount after the pass that tagged the
     // card; a tagged card must not block re-checking for its seat.
     const seat = fakeEl()
+    const frame = fakeEl()
     const card = fakeEl({ r: '22px', bg: 'rgb(255, 255, 255)' })
-    seat.children.push(card)
-    card.parent = seat
+    frame.children.push(card)
+    card.parent = frame
+    seat.children.push(frame)
+    frame.parent = seat
     textarea(card)
     const root = fakeEl({}, [seat])
     installFakeDom(root)
 
-    expect(markComposerSurfaces(root as unknown as ParentNode)).toEqual([card])
+    expect(markComposerSurfaces(root as unknown as ParentNode)).toEqual([card, frame])
     seat.style.img = 'linear-gradient(transparent 0px, rgb(255, 255, 255) 36px)'
     expect(markComposerSurfaces(root as unknown as ParentNode)).toEqual([seat])
     expect((seat as unknown as { dataset: Record<string, string> }).dataset.dshT3Surface).toBe('composer-seat')

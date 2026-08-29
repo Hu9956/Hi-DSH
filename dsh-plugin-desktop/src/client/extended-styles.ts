@@ -465,8 +465,30 @@ body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #ro
    the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
 body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
   border: 1px solid var(--dshT3-border);
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
+}
+/* Glass frame around the composer card (the card's direct parent): a
+   white-alpha ring with the T3 nested-radius rule (frame 22 > card 14) and a
+   capped centered width so collapsing the sidebar cannot stretch it. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 800px;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  box-shadow: 0 4px 16px color-mix(in srgb, #000 5%, transparent);
+}
+body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-frame"] {
+  border-color: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 16px color-mix(in srgb, #000 30%, transparent);
 }
 body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
   border-color: var(--dshT3-border-strong);
