@@ -1,5 +1,6 @@
 /** Independent frame shared by compatibility and inverted-L extended modes. */
 
+import { tokensCss } from 'dsh-ui'
 import {
   EXTENDED_INNER_CORNER_RADIUS,
   DESKTOP_FRAME_HEIGHT,
@@ -9,7 +10,7 @@ import {
 
 const STYLE_ID = 'dsh-desktop-framed-styles'
 
-const CSS = `
+const CSS = `${tokensCss}
 html:has(body:is([data-dsh-desktop-mode="compatibility"], [data-dsh-desktop-mode="extended"])),
 body:is([data-dsh-desktop-mode="compatibility"], [data-dsh-desktop-mode="extended"]) {
   width: 100%;
@@ -407,6 +408,74 @@ body[data-dsh-desktop-mode="extended"]:not([data-dsh-desktop-material="off"]) {
   color: var(--dsw-alias-state-error-primary);
   font-size: 11px;
   line-height: 1.4;
+}
+/* T3 sidebar (compatibility, material off): the upstream AppFrame becomes the
+   Claude-style two-layer composition — ONE base sheet fills the frame (and the
+   titlebar above it) in the conversation's own tone, and the sidebar column
+   floats ON that sheet as a rounded card (~14px sheet gap on top/left/bottom,
+   flush right against the content behind a hairline). The base references the
+   upstream bg-base alias — the same tone the conversation surface paints — so
+   the sheet and the content stay one color in both host themes; the gap
+   darkening is the card's own ambient shadow, not a separate canvas fill.
+   Anchored to the frame's inline grid tracks plus its shell-overlay child, the
+   only upstream-stable structural signature; the selectors simply stop
+   matching where AppFrame is not mounted. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] {
+  --dshT3-sidebar-gap: 14px;
+  --dshT3-sidebar-radius: 16px;
+  --dsh-desktop-frame-fill: var(--dsw-alias-bg-base);
+  --dshT3-sidebar-shadow: 0 2px 10px color-mix(in srgb, #000 4%, transparent), 6px 0 24px color-mix(in srgb, #000 4%, transparent);
+}
+body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] {
+  --dshT3-sidebar-shadow: 0 2px 10px color-mix(in srgb, #000 35%, transparent), 6px 0 24px color-mix(in srgb, #000 35%, transparent);
+}
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) {
+  background: var(--dsw-alias-bg-base);
+}
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) > div:first-child {
+  /* SidebarRoot paints its own fill; retarget the token it reads (var
+     inheritance) so the card interior follows the T3 surface in both themes. */
+  --dsw-specific-sidebar-fill: var(--dshT3-surface);
+  box-sizing: border-box;
+  margin: var(--dshT3-sidebar-gap) 0 var(--dshT3-sidebar-gap) var(--dshT3-sidebar-gap);
+  border: 1px solid var(--dshT3-border);
+  border-radius: var(--dshT3-sidebar-radius);
+  background: var(--dshT3-surface);
+  box-shadow: var(--dshT3-sidebar-shadow);
+  /* Sidebar rows cancel the root's inline padding with negative margins, so
+     their content reaches the box edge; keep it off the card's hairline. */
+  padding-right: 10px;
+  /* The center column paints after this one in DOM order, so its opaque
+     surface would slice the card's shadow into the gap strips only — visible
+     seams at the flush corners. Lift the card so its shadow renders over the
+     content background and fades continuously, Claude-style. */
+  position: relative;
+  z-index: 1;
+}
+/* SidebarRoot pins its width inline to the grid track (the slot's live width
+   prop), overflowing the inset card and clipping at its edge; inline styles
+   lose to this !important, so the root tracks the card box instead. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] #root div[style*="grid-template-columns"]:has([data-shell-overlay]) > div:first-child div[style*="width"] {
+  width: 100% !important;
+}
+/* Conversation composer: upstream paints a 22px pill with a 10%-black border
+   that reads as a dirty halo on the T3 base. The card is tagged
+   data-dsh-t3-surface by the client (no stable upstream anchor) — restyle to
+   the T3 card recipe: hairline zinc border, 16px radius, one soft shadow. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
+  border: 1px solid var(--dshT3-border);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 3%, transparent), 0 4px 14px color-mix(in srgb, #000 4%, transparent);
+}
+body[data-ds-dark-theme][data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer"] {
+  border-color: var(--dshT3-border-strong);
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 25%, transparent), 0 4px 14px color-mix(in srgb, #000 30%, transparent);
+}
+/* The composer seat lays a white fade so scrolling content dissolves under
+   the input; on the T3 base that fade reads as a dirty band around the card
+   (both themes), so the seat shows the bare base like the rest of the shell. */
+body[data-dsh-desktop-mode="compatibility"][data-dsh-desktop-material="off"] [data-dsh-t3-surface="composer-seat"] {
+  background-image: none;
 }
 `
 
