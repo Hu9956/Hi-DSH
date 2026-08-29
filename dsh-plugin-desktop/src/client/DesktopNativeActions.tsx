@@ -4,6 +4,7 @@ import { Bug, ChevronDown, LifeBuoy, RefreshCw, RotateCw, SquareTerminal, Wrench
 import { useEffect, useRef, useState } from 'react'
 import type { DesktopSettingsApi } from './desktop-settings-api.ts'
 import type { DesktopSettingsLocaleKey } from './desktop-settings-locales.ts'
+import { Button } from 'dsh-ui'
 
 export interface DesktopNativeActionsProps {
   readonly api: Pick<
@@ -157,27 +158,15 @@ export function DesktopNativeActions({ api, t, placement }: DesktopNativeActions
           <span className="dshDesktopNativeActionError" role="alert">{t(failureKey)}</span>
         )}
         {api.exportDiagnostics !== undefined && (
-          <button
-            type="button"
-            className="dshDesktopSettingsHeaderButton"
-            disabled={busy}
-            onClick={exportDiagnostics}
-          >
+          <Button disabled={busy} onClick={exportDiagnostics}>
             {t(exportingDiagnostics ? 'exportingDiagnostics' : 'exportDiagnostics')}
-          </button>
+          </Button>
         )}
-        <button
-          type="button"
-          className="dshDesktopSettingsHeaderButton"
-          disabled={busy}
-          onClick={open}
-        >
+        <Button disabled={busy} onClick={open}>
           {t(opening ? 'openingTerminal' : 'openTerminal')}
-        </button>
+        </Button>
         <div className="dshDesktopNativeActionMenuAnchor" ref={restartMenuRef}>
-          <button
-            type="button"
-            className="dshDesktopSettingsHeaderButton"
+          <Button
             aria-expanded={restartMenuOpen}
             aria-haspopup="menu"
             disabled={busy}
@@ -185,7 +174,7 @@ export function DesktopNativeActions({ api, t, placement }: DesktopNativeActions
           >
             {t(restarting ? 'restartingDesktop' : 'restartDesktop')}
             <ChevronDown aria-hidden="true" />
-          </button>
+          </Button>
           {restartMenuOpen && (
             <div className="dshDesktopActionMenu" role="menu">
               <DesktopRestartMenuItems

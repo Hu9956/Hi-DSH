@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { DesktopSettingsApi } from './desktop-settings-api.ts'
 import type { DesktopSettingsLocaleKey } from './desktop-settings-locales.ts'
+import { Button, Badge } from 'dsh-ui'
 
 export interface DesktopUpdateCheckRowInjected {
   readonly api: Pick<DesktopSettingsApi, 'checkForUpdates' | 'checkCoreUpdates'>
@@ -55,7 +56,7 @@ export function DesktopUpdateCheckRow({ api, t }: DesktopUpdateCheckRowProps) {
         <div className="dshDesktopUpdateCardInfo">
           <div className="dshDesktopUpdateCardTitle">
             {t('appUpdateTitle')}
-            <span className="dshDesktopUpdateBadge">App</span>
+            <Badge variant="primary">App</Badge>
           </div>
           <div className="dshDesktopUpdateCardVersion">
             {t('appUpdateCurrentVersion')}
@@ -66,21 +67,16 @@ export function DesktopUpdateCheckRow({ api, t }: DesktopUpdateCheckRowProps) {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          className="dshDesktopSettingsButton"
-          disabled={appChecking}
-          onClick={() => { void handleCheckApp() }}
-        >
+        <Button disabled={appChecking} onClick={() => { void handleCheckApp() }}>
           {appChecking ? t('checkingAppUpdates') : t('checkAppUpdates')}
-        </button>
+        </Button>
       </div>
 
       <div className="dshDesktopUpdateCard">
         <div className="dshDesktopUpdateCardInfo">
           <div className="dshDesktopUpdateCardTitle">
             {t('coreUpdateTitle')}
-            <span className="dshDesktopUpdateBadge dshDesktopUpdateBadgeCore">Core</span>
+            <Badge variant="success">Core</Badge>
           </div>
           <div className="dshDesktopUpdateCardVersion">
             {t('coreUpdateCurrentVersion')}
@@ -91,14 +87,9 @@ export function DesktopUpdateCheckRow({ api, t }: DesktopUpdateCheckRowProps) {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          className="dshDesktopSettingsButton"
-          disabled={coreChecking}
-          onClick={() => { void handleCheckCore() }}
-        >
+        <Button disabled={coreChecking} onClick={() => { void handleCheckCore() }}>
           {coreChecking ? t('checkingCoreUpdates') : t('checkCoreUpdates')}
-        </button>
+        </Button>
       </div>
 
       <div className="dshDesktopUpdateNotice">

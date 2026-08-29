@@ -76,6 +76,7 @@ import {
   handleSkillBoardListRequest,
   handleSkillBoardToggleRequest,
 } from './skill-board-routes.ts'
+import { SKILL_BOARD_PAGE_PATH, handleSkillBoardPageRequest } from './skill-board-page.ts'
 import type {} from './desktop-settings-controller.ts'
 import { desktopBootRecoveryInjections } from './desktop-boot-recovery.ts'
 import type { DesktopShellMode } from './runtime.ts'
@@ -337,6 +338,14 @@ export function apply(ctx: Context, config: Config): void {
       handler: (req, res) => handleSkillBoardToggleRequest(req, res, rendererOrigin, skillBoardService),
     }),
     'dsh-plugin-desktop: skill-board toggle route',
+  )
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'exact',
+      path: SKILL_BOARD_PAGE_PATH,
+      handler: (req, res) => handleSkillBoardPageRequest(req, res),
+    }),
+    'dsh-plugin-desktop: skill-board page route',
   )
   if (runtime.platform === 'win32') {
     ctx.effect(

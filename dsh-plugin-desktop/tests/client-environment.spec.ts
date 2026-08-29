@@ -3,7 +3,6 @@ import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import { apply } from '../src/client/index.ts'
 import { AdvancedFrame } from '../src/client/AdvancedFrame.tsx'
 import { applyAdvancedShell } from '../src/client/advanced-shell.ts'
-import { provideDesktopLayout } from '../src/client/layout-service.ts'
 import { parseDesktopClientEnvironment } from '../src/client/environment.ts'
 import { ExtendedFrame } from '../src/client/ExtendedFrame.tsx'
 import { applyExtendedShell, applyFramedShell } from '../src/client/extended-shell.ts'
@@ -126,24 +125,6 @@ describe('advanced desktop layout', () => {
     finally {
       vi.unstubAllGlobals()
     }
-  })
-
-  it('releases the Cordis layout service with its owning effect', () => {
-    let disposed = false
-    const ctx = {
-      reflect: {
-        provide: (name: string, value: unknown) => {
-          expect(name).toBe('layout')
-          expect(value).toBeInstanceOf(DesktopLayoutState)
-          return () => { disposed = true }
-        },
-      },
-    } as unknown as ClientContext
-
-    const dispose = provideDesktopLayout(ctx, new DesktopLayoutState())
-    expect(disposed).toBe(false)
-    dispose()
-    expect(disposed).toBe(true)
   })
 
   it('keeps the enhanced root registration independent from the extended frame', () => {
@@ -473,7 +454,12 @@ describe('independent Desktop frame', () => {
         api: expect.any(Object),
         setMode: expect.any(Function),
       })
-      expect(registrations).toHaveLength(2)
+      expect(registrations[2]).toMatchObject({
+        name: 'shell.overlay',
+        id: 'desktop-extensions-center',
+        locale: 'desktop.settings',
+      })
+      expect(registrations).toHaveLength(3)
       expect(dataset).toMatchObject({
         dshDesktopMode: 'extended',
         dshDesktopPlatform: 'win32',
@@ -525,8 +511,8 @@ describe('independent Desktop frame', () => {
         material: 'transparent',
         micaSupported: false,
       })
-      expect(injectedSlots).toEqual(['shell.overlay'])
-      expect(registrations).toHaveLength(1)
+      expect(injectedSlots).toEqual(['shell.overlay', 'shell.overlay'])
+      expect(registrations).toHaveLength(2)
       expect(registrations[0]).toMatchObject({
         name: 'shell.overlay',
         id: 'desktop-frame-titlebar',
@@ -534,6 +520,10 @@ describe('independent Desktop frame', () => {
       expect(registrations[0]).not.toHaveProperty('children')
       expect((registrations[0]?.inject as () => Record<string, unknown>)()).toMatchObject({
         setMode: expect.any(Function),
+      })
+      expect(registrations[1]).toMatchObject({
+        name: 'shell.overlay',
+        id: 'desktop-extensions-center',
       })
       expect(JSON.stringify(registrations)).not.toContain('desktop.titlebar.action')
       expect(dataset).toMatchObject({

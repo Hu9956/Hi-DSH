@@ -4,7 +4,6 @@ import type {} from './contracts.ts'
 import type { DesktopClientEnvironment } from './environment.ts'
 import { AdvancedFrame } from './AdvancedFrame.tsx'
 import { DesktopLayoutState } from './layout-state.ts'
-import { provideDesktopLayout } from './layout-service.ts'
 import { installDesktopOwnedStyles } from './styles.ts'
 import { DesktopThemePresenter } from './theme-presenter.ts'
 
@@ -14,11 +13,11 @@ export function applyAdvancedShell(ctx: ClientContext, environment: DesktopClien
     throw new Error(`dsh-plugin-desktop: advanced shell received mode ${JSON.stringify(environment.mode)}`)
   }
 
+  // The layout state reaches AdvancedFrame through the root-slot inject; it is
+  // deliberately NOT seated as a Cordis service — upstream ui-layout owns the
+  // `layout` service name and a second provide on the shared plugin fiber
+  // throws ("service layout has been registered").
   const desktopLayout = new DesktopLayoutState()
-  ctx.effect(
-    () => provideDesktopLayout(ctx, desktopLayout),
-    'desktop: layout service',
-  )
 
   ctx.effect(() => {
     document.body.dataset.dshDesktopMode = 'advanced'
@@ -45,6 +44,8 @@ export function applyAdvancedShell(ctx: ClientContext, environment: DesktopClien
 
   ctx.effect(() => ctx.slots.register({
     name: 'root',
+    // Shadow upstream ui-layout's AppFrame (priority 0): lowest priority renders.
+    priority: -1,
     children: {
       'sidebar': { kind: 'single', scope: 'root' },
       'conversation': { kind: 'single', scope: 'session-maybe' },

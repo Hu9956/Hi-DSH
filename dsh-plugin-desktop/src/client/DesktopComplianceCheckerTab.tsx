@@ -11,6 +11,7 @@ import {
   verifyPluginCompliance,
   type PluginComplianceReport,
 } from '../compliance-checker.ts'
+import { Button, Badge, Card } from 'dsh-ui'
 
 export interface DesktopComplianceCheckerTabProps
   extends Partial<PropsRuntime<'settings.plugins.tab'>> {
@@ -137,77 +138,67 @@ export function DesktopComplianceCheckerTab(props: DesktopComplianceCheckerTabPr
 
   return (
     <div className="dshComplianceContainer">
-      <div className="dshComplianceCard">
+      <Card>
         <div className="dshComplianceHeader">
           <div className="dshComplianceTitle">
             <span>{t('complianceTitle')}</span>
           </div>
-          <div className="dshComplianceActiveBadge">
+          <Badge variant="success">
             <span>●</span>
             <span>{t('complianceBadge')}</span>
-          </div>
+          </Badge>
         </div>
 
-        <p className="dshDesktopSettingsHint" style={{ margin: 0 }}>
+        <p className="dshDesktopSettingsHint">
           {t('complianceDesc')}
         </p>
 
         <div className="dshCompliancePresetRow">
-          <button
-            type="button"
-            className="dshCompliancePresetBtn"
+          <Button
+            variant="ghost"
             onClick={() => {
               setSourceCode(PRESET_TOOL)
             }}
           >
             {t('compliancePresetTool')}
-          </button>
-          <button
-            type="button"
-            className="dshCompliancePresetBtn"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => {
               setSourceCode(PRESET_SLOT)
             }}
           >
             {t('compliancePresetSlot')}
-          </button>
-          <button
-            type="button"
-            className="dshCompliancePresetBtn"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => {
               setSourceCode(PRESET_SERVICE)
             }}
           >
             {t('compliancePresetService')}
-          </button>
-          <button
-            type="button"
-            className="dshCompliancePresetBtn"
-            style={{ color: '#ef4444' }}
+          </Button>
+          <Button
+            variant="danger"
             onClick={() => {
               setSourceCode(PRESET_INVALID)
             }}
           >
             {t('compliancePresetInvalid')}
-          </button>
+          </Button>
         </div>
 
         <textarea
           className="dshComplianceTextarea"
           value={sourceCode}
           onChange={e => setSourceCode(e.target.value)}
-          placeholder="Paste or edit plugin manifest and source code here..."
+          placeholder={t('complianceSourcePlaceholder')}
         />
 
         <div className="dshComplianceActionRow">
-          <button
-            type="button"
-            className="dshDesktopSettingsBtn dshDesktopSettingsBtnPrimary"
-            onClick={handleRunAudit}
-            disabled={isPending}
-          >
+          <Button variant="primary" onClick={handleRunAudit} disabled={isPending}>
             {isPending ? '...' : t('complianceRunCheck')}
-          </button>
+          </Button>
         </div>
 
         <div className="dshComplianceResultBox">
@@ -232,12 +223,12 @@ export function DesktopComplianceCheckerTab(props: DesktopComplianceCheckerTabPr
             </div>
             <div className="dshComplianceStatItem">
               <span>{t('complianceScoreLabel')}:</span>
-              <span style={{ fontWeight: 600 }}>{report.score} / 100</span>
+              <span className="dshComplianceStatValue">{report.score} / 100</span>
             </div>
             {report.manifest && (
               <div className="dshComplianceStatItem">
                 <span>ID:</span>
-                <code style={{ fontSize: '12px' }}>
+                <code className="dshComplianceIdCode">
                   [{report.manifest.kind}] {report.manifest.name}@{report.manifest.version}
                 </code>
               </div>
@@ -245,31 +236,31 @@ export function DesktopComplianceCheckerTab(props: DesktopComplianceCheckerTabPr
           </div>
 
           {report.violations.length > 0 ? (
-            <div style={{ marginTop: '8px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#ef4444', marginBottom: '4px' }}>
+            <div className="dshComplianceFindingGroup" data-severity="error">
+              <div className="dshComplianceFindingTitle">
                 {t('complianceViolationsLabel')} ({report.violations.length}):
               </div>
-              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#ef4444' }}>
+              <ul className="dshComplianceFindingList">
                 {report.violations.map((v, i) => (
                   <li key={i}>
                     <strong>[{v.code}]</strong> {v.message}
-                    {v.detail && <div style={{ color: 'var(--dsw-alias-label-secondary)' }}>{v.detail}</div>}
+                    {v.detail && <div className="dshComplianceFindingDetail">{v.detail}</div>}
                   </li>
                 ))}
               </ul>
             </div>
           ) : (
-            <div style={{ fontSize: '12px', color: '#16a34a', marginTop: '4px' }}>
+            <div className="dshComplianceNoViolations">
               {t('complianceNoViolations')}
             </div>
           )}
 
           {report.warnings.length > 0 && (
-            <div style={{ marginTop: '8px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#f59e0b', marginBottom: '4px' }}>
+            <div className="dshComplianceFindingGroup" data-severity="warning">
+              <div className="dshComplianceFindingTitle">
                 {t('complianceWarningsLabel')} ({report.warnings.length}):
               </div>
-              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#f59e0b' }}>
+              <ul className="dshComplianceFindingList">
                 {report.warnings.map((w, i) => (
                   <li key={i}>
                     <strong>[{w.code}]</strong> {w.message}
@@ -279,7 +270,7 @@ export function DesktopComplianceCheckerTab(props: DesktopComplianceCheckerTabPr
             </div>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

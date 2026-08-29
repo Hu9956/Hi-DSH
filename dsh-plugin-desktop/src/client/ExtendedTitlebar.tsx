@@ -1,7 +1,7 @@
 /** Independent Desktop frame portalled above the upstream content viewport. */
 
 import { createPortal } from 'react-dom'
-import { Blocks, LayoutTemplate, PanelTop, RefreshCw, Sparkles } from 'lucide-react'
+import { Blocks, LayoutTemplate, PanelTop, Puzzle, RefreshCw, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import type {
   InjectFace, PropsLocale, PropsRuntime,
@@ -9,6 +9,7 @@ import type {
 import type { DesktopSettingsApi } from './desktop-settings-api.ts'
 import type { DesktopClientEnvironment, DesktopClientMode } from './environment.ts'
 import { DesktopNativeActions } from './DesktopNativeActions.tsx'
+import { openExtensionsCenter } from './ExtensionsCenter.tsx'
 import { Button } from '../native-ui/components/ui/button.tsx'
 import type { DesktopSettingsLocaleKey } from './desktop-settings-locales.ts'
 import {
@@ -188,6 +189,15 @@ export function DesktopFrameTitlebar({ api, environment, setMode, t }: DesktopFr
         />
       </div>
       <div className="dshDesktopFrameActions">
+        <button
+          type="button"
+          className="dshDesktopTitlebarIconButton"
+          title={t('extensionsCenter')}
+          aria-label={t('extensionsCenter')}
+          onClick={openExtensionsCenter}
+        >
+          <Puzzle aria-hidden="true" />
+        </button>
         <button
           type="button"
           className="dshDesktopTitlebarIconButton"

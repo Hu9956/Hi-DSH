@@ -10,6 +10,7 @@ import type {
 } from './desktop-settings-api.ts'
 import type { DesktopSettingsLocaleKey } from './desktop-settings-locales.ts'
 import type { DesktopClientPlatform } from './environment.ts'
+import { Button, Badge, Switch, TextField, SelectField, Notice } from 'dsh-ui'
 
 /** Browser view of the Host `dsh-desktop` settings namespace. */
 export interface DesktopShellSettings {
@@ -97,7 +98,7 @@ function Choice({
       <span className="dshDesktopSettingsChoiceCopy">
         <span className="dshDesktopSettingsChoiceTitle">
           {title}
-          {status !== undefined && <span className="dshDesktopSettingsBadge">{status}</span>}
+          {status !== undefined && <Badge>{status}</Badge>}
         </span>
         <span className="dshDesktopSettingsChoiceBody">{body}</span>
       </span>
@@ -135,17 +136,12 @@ function ToggleRow({
   return (
     <div className="dshDesktopSettingsToggleRow">
       <span id={labelId}>{label}</span>
-      <button
-        type="button"
-        role="switch"
-        className="dshDesktopSettingsToggle"
-        aria-checked={checked}
-        aria-labelledby={labelId}
+      <Switch
+        checked={checked}
         disabled={disabled}
-        onClick={() => { onChange(!checked) }}
-      >
-        <span className="dshDesktopSettingsToggleKnob" aria-hidden="true" />
-      </button>
+        aria-labelledby={labelId}
+        onCheckedChange={onChange}
+      />
     </div>
   )
 }
@@ -323,11 +319,11 @@ export function DesktopSettingsSection({
         <p>{t('intro')}</p>
       </header>
 
-      {operationFailed && <p className="dshDesktopSettingsError" role="alert">{t('operationFailed')}</p>}
+      {operationFailed && <Notice tone="error" role="alert">{t('operationFailed')}</Notice>}
       {restart !== 'none' && (
-        <p className="dshDesktopSettingsSuccess" role="status">
+        <Notice tone="success" role="status">
           {t(restart === 'restarting' ? 'restarting' : 'restartRequired')}
-        </p>
+        </Notice>
       )}
 
       <section className="dshDesktopSettingsGroup" aria-labelledby="dsh-desktop-profile-title">
@@ -338,8 +334,8 @@ export function DesktopSettingsSection({
         {busy === 'load' && view === undefined && <p className="dshDesktopSettingsHint">{t('loading')}</p>}
         {loadFailed && view === undefined && (
           <div>
-            <p className="dshDesktopSettingsError" role="alert">{t('unavailable')}</p>
-            <button type="button" className="dshDesktopSettingsButton" onClick={() => { void load() }}>{t('retry')}</button>
+            <Notice tone="error" role="alert">{t('unavailable')}</Notice>
+            <Button onClick={() => { void load() }}>{t('retry')}</Button>
           </div>
         )}
         {view !== undefined && (
@@ -354,32 +350,26 @@ export function DesktopSettingsSection({
                         <div className="dshDesktopSettingsDeleteConfirm" role="group" aria-label={t('confirmDeleteProfile')}>
                           <span className="dshDesktopSettingsDeleteWarning">{t('deleteProfileWarning')}</span>
                           <span className="dshDesktopSettingsDeleteActions">
-                            <button
-                              type="button"
-                              className="dshDesktopSettingsButton dshDesktopSettingsButtonDanger"
+                            <Button
+                              variant="danger"
                               disabled={busy !== undefined}
                               onClick={() => { deleteProfile(profile.name) }}
                             >
                               {busy === 'delete-profile' ? t('deletingProfile') : t('confirmDeleteProfile')}
-                            </button>
-                            <button
-                              type="button"
-                              className="dshDesktopSettingsButton dshDesktopSettingsButtonSecondary"
+                            </Button>
+                            <Button
+                              variant="ghost"
                               disabled={busy !== undefined}
                               onClick={() => { setPendingProfileDelete(undefined) }}
                             >
                               {t('cancelDeleteProfile')}
-                            </button>
+                            </Button>
                           </span>
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          className="dshDesktopSettingsButton dshDesktopSettingsButtonSecondary"
-                          onClick={() => { setPendingProfileDelete(profile.name) }}
-                        >
+                        <Button variant="ghost" onClick={() => { setPendingProfileDelete(profile.name) }}>
                           {t('deleteProfile')}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   ) : undefined
@@ -398,25 +388,21 @@ export function DesktopSettingsSection({
               })}
             </div>
             <form className="dshDesktopSettingsForm" onSubmit={createProfile}>
-              <label className="dshDesktopSettingsField">
-                {t('profileName')}
-                <input
-                  className="dshDesktopSettingsInput"
-                  value={profileName}
-                  maxLength={128}
-                  autoComplete="off"
-                  placeholder={t('profileNamePlaceholder')}
-                  disabled={busy !== undefined || restart !== 'none'}
-                  onChange={event => { setProfileName(event.currentTarget.value) }}
-                />
-              </label>
-              <button
+              <TextField
+                label={t('profileName')}
+                value={profileName}
+                maxLength={128}
+                autoComplete="off"
+                placeholder={t('profileNamePlaceholder')}
+                disabled={busy !== undefined || restart !== 'none'}
+                onChange={event => { setProfileName(event.currentTarget.value) }}
+              />
+              <Button
                 type="submit"
-                className="dshDesktopSettingsButton"
                 disabled={profileName.trim().length === 0 || busy !== undefined || restart !== 'none'}
               >
                 {busy === 'create-profile' ? t('creatingProfile') : t('create')}
-              </button>
+              </Button>
             </form>
           </>
         )}
@@ -427,9 +413,9 @@ export function DesktopSettingsSection({
           <h3 id="dsh-desktop-market-title">{t('marketTitle')}</h3>
           <p className="dshDesktopSettingsGroupIntro">{t('marketIntro')}</p>
         </div>
-        {view?.market.legacyDefaulted === true && <p className="dshDesktopSettingsNotice">{t('legacyMarketNotice')}</p>}
+        {view?.market.legacyDefaulted === true && <Notice>{t('legacyMarketNotice')}</Notice>}
         {view !== undefined && view.market.requested !== view.market.effective && restart === 'none' && (
-          <p className="dshDesktopSettingsNotice" role="status">{t('marketLoadFailed')}</p>
+          <Notice role="status">{t('marketLoadFailed')}</Notice>
         )}
         {view !== undefined && (
           <div className="dshDesktopSettingsList" role="radiogroup" aria-labelledby="dsh-desktop-market-title">
@@ -456,7 +442,7 @@ export function DesktopSettingsSection({
           <h3 id="dsh-desktop-presentation-title">{t('presentationTitle')}</h3>
           <p className="dshDesktopSettingsGroupIntro">{t('presentationIntro')}</p>
         </div>
-        {desktop.status === 'unavailable' && <p className="dshDesktopSettingsNotice">{t('readOnly')}</p>}
+        {desktop.status === 'unavailable' && <Notice>{t('readOnly')}</Notice>}
         <div className="dshDesktopSettingsList" role="radiogroup" aria-labelledby="dsh-desktop-presentation-title">
           <Choice
             title={t('compatibilityMode')}
@@ -489,8 +475,7 @@ export function DesktopSettingsSection({
               <span className="dshDesktopSettingsChoiceTitle">{t('windowMaterial')}</span>
               <span className="dshDesktopSettingsChoiceBody">{t('windowMaterialBody')}</span>
             </span>
-            <select
-              className="dshDesktopSettingsSelect"
+            <SelectField
               value={platform === 'darwin'
                 ? desktop.value?.macosMaterial ?? 'transparent'
                 : !micaSupported && desktop.value?.windowsMaterial === 'mica'
@@ -508,7 +493,7 @@ export function DesktopSettingsSection({
                       {micaSupported && <option value="mica">{t('windowMaterialMica')}</option>}
                     </>
                   )}
-            </select>
+            </SelectField>
           </label>
         )}
       </section>
@@ -518,7 +503,7 @@ export function DesktopSettingsSection({
           <h3 id="dsh-desktop-notifications-title">{t('notificationsTitle')}</h3>
           <p className="dshDesktopSettingsGroupIntro">{t('notificationsIntro')}</p>
         </div>
-        {notifications.status === 'unavailable' && <p className="dshDesktopSettingsNotice">{t('readOnly')}</p>}
+        {notifications.status === 'unavailable' && <Notice>{t('readOnly')}</Notice>}
         <ToggleRow
           label={t('notificationsEnabled')}
           checked={notificationValue.enabled}

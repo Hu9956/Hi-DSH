@@ -13,19 +13,17 @@ import {
 import type { DesktopShellSettings } from './DesktopSettingsSection.tsx'
 import type { DesktopClientEnvironment } from './environment.ts'
 import { DesktopFrameTitlebar } from './ExtendedTitlebar.tsx'
+import { ExtensionsCenter } from './ExtensionsCenter.tsx'
 import { installExtendedStyles } from './extended-styles.ts'
 import { DesktopLayoutState } from './layout-state.ts'
-import { provideDesktopLayout } from './layout-service.ts'
 import { installDesktopOwnedStyles } from './styles.ts'
 import { DesktopThemePresenter } from './theme-presenter.ts'
 
 /** Own the extended root/sidebar surface without reusing enhanced-mode chrome. */
 function applyExtendedOwnedShell(ctx: ClientContext, environment: DesktopClientEnvironment): void {
+  // Layout state rides the root-slot inject; see advanced-shell.ts for why it
+  // must not be seated as the Cordis `layout` service.
   const desktopLayout = new DesktopLayoutState()
-  ctx.effect(
-    () => provideDesktopLayout(ctx, desktopLayout),
-    'desktop: extended layout service',
-  )
 
   ctx.effect(
     () => installDesktopOwnedStyles(),
@@ -44,6 +42,8 @@ function applyExtendedOwnedShell(ctx: ClientContext, environment: DesktopClientE
 
   ctx.effect(() => ctx.slots.register({
     name: 'root',
+    // Shadow upstream ui-layout's AppFrame (priority 0): lowest priority renders.
+    priority: -1,
     children: {
       'sidebar': { kind: 'single', scope: 'root' },
       'conversation': { kind: 'single', scope: 'session-maybe' },
@@ -96,6 +96,13 @@ export function applyFramedShell(
     locale: DESKTOP_SETTINGS_LOCALE_NAMESPACE,
     inject: () => ({ api, environment, setMode }),
   }, DesktopFrameTitlebar))
+
+  ctx.slots.inject('shell.overlay', () => ctx.slots.register({
+    name: 'shell.overlay',
+    id: 'desktop-extensions-center',
+    order: 1000,
+    locale: DESKTOP_SETTINGS_LOCALE_NAMESPACE,
+  }, ExtensionsCenter))
 }
 
 /** Compose the extended-owned layout beneath its independent Desktop frame. */

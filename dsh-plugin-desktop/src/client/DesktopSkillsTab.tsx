@@ -1,10 +1,11 @@
 /**
  * Skills Tab in Settings -> Extensions.
- * Clean native DSH UI for managing Agent Skills and Skill Packs (zero emojis).
+ * Manages Agent Skills and Skill Packs through the shared desktop UI primitives.
  */
 
 import { useState, useEffect, useMemo } from 'react'
 import type { DesktopSettingsLocaleKey } from './desktop-settings-locales.ts'
+import { Button, Card, Badge, StatusPill, SegmentedControl, ChipTabs, TextField, Empty } from 'dsh-ui'
 
 export interface DesktopSkillsTabProps {
   t: (key: DesktopSettingsLocaleKey) => string
@@ -77,87 +78,61 @@ export function DesktopSkillsTab({ t }: DesktopSkillsTabProps) {
 
   return (
     <div className="dshDesktopSettingsSection">
-      {/* 二级子导航 (无表情图标) */}
-      <div className="dshSubNavTabs">
-        <button
-          type="button"
-          className={`dshSubNavTab ${activeSubTab === 'installed' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('installed')}
-        >
-          {t('extSubInstalled')}
-        </button>
-        <button
-          type="button"
-          className={`dshSubNavTab ${activeSubTab === 'market' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('market')}
-        >
-          {t('extSubMarket')}
-        </button>
-      </div>
+      <SegmentedControl<SkillSubTab>
+        value={activeSubTab}
+        onChange={setActiveSubTab}
+        options={[
+          { value: 'installed', label: t('extSubInstalled') },
+          { value: 'market', label: t('extSubMarket') },
+        ]}
+      />
 
       {/* 已安装 */}
       {activeSubTab === 'installed' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* 三级导航 (单项技能 vs 技能套件) */}
-          <div className="dshTertiaryNavTabs">
-            <button
-              type="button"
-              className={`dshTertiaryNavTab ${activeTertiary === 'single' ? 'active' : ''}`}
-              onClick={() => setActiveTertiary('single')}
-            >
-              {t('extSkillSingle')} ({filteredSkills.length})
-            </button>
-            <button
-              type="button"
-              className={`dshTertiaryNavTab ${activeTertiary === 'packs' ? 'active' : ''}`}
-              onClick={() => setActiveTertiary('packs')}
-            >
-              {t('extSkillPacks')}
-            </button>
-          </div>
+        <div className="dshSkillsSection">
+          <ChipTabs<SkillTertiary>
+            value={activeTertiary}
+            onChange={setActiveTertiary}
+            options={[
+              { value: 'single', label: `${t('extSkillSingle')} (${filteredSkills.length})` },
+              { value: 'packs', label: t('extSkillPacks') },
+            ]}
+          />
 
           {activeTertiary === 'single' && (
             <>
               <div className="dshSkillsControls">
-                <input
+                <TextField
                   type="text"
-                  className="dshSearchInput"
-                  placeholder={t('searchSkillsPlaceholder')}
                   value={search}
+                  placeholder={t('searchSkillsPlaceholder')}
                   onChange={e => setSearch(e.target.value)}
                 />
-                <button
-                  type="button"
-                  className="dshActionBtn"
-                  onClick={() => void loadSkills()}
-                  disabled={loading}
-                >
+                <Button onClick={() => void loadSkills()} disabled={loading}>
                   {t('refresh')}
-                </button>
+                </Button>
               </div>
 
               {loading ? (
-                <p style={{ color: 'var(--dsw-alias-label-secondary)' }}>{t('loading')}</p>
+                <Empty description={t('loading')} />
               ) : filteredSkills.length === 0 ? (
-                <p style={{ color: 'var(--dsw-alias-label-secondary)' }}>{t('noSkillsFound')}</p>
+                <Empty description={t('noSkillsFound')} />
               ) : (
                 <div className="dshSkillsList">
                   {filteredSkills.map(skill => (
-                    <div key={skill.path} className={`dshSkillCard ${skill.enabled ? 'enabled' : ''}`}>
+                    <Card key={skill.path} active={skill.enabled}>
                       <div className="dshSkillCardHeader">
                         <div className="dshSkillCardMain">
                           <span className="dshSkillName">{skill.name}</span>
-                          <span className="dshSkillBadge">{skill.source}</span>
+                          <Badge mono>{skill.source}</Badge>
                         </div>
-                        <button
-                          type="button"
-                          className={`dshStatusPill ${skill.enabled ? 'dshStatusPillActive' : 'dshStatusPillInactive'}`}
+                        <StatusPill
+                          active={skill.enabled}
                           onClick={() => void handleToggle(skill)}
-                          style={{ cursor: 'pointer', border: 'none' }}
-                          title="点击一键切换热开关"
+                          title={t('skillToggleHint')}
                         >
                           {skill.enabled ? t('skillEnabled') : t('skillDisabled')}
-                        </button>
+                        </StatusPill>
                       </div>
                       <p className="dshSkillDesc">
                         {skill.description || t('noDescription')}
@@ -165,7 +140,7 @@ export function DesktopSkillsTab({ t }: DesktopSkillsTabProps) {
                       <div className="dshSkillFooter">
                         <span className="dshSkillPath">{skill.path}</span>
                       </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               )}
@@ -175,14 +150,12 @@ export function DesktopSkillsTab({ t }: DesktopSkillsTabProps) {
           {activeTertiary === 'packs' && (
             <div className="dshMarketPlaceholderCard">
               <div className="dshMarketHeader">
-                <h4 style={{ margin: 0, fontSize: '15px', color: 'var(--dsw-alias-label-primary)' }}>{t('skillPacksTitle')}</h4>
+                <h4 className="dshMarketTitle">{t('skillPacksTitle')}</h4>
               </div>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--dsw-alias-label-secondary)', maxWidth: '520px' }}>
+              <p className="dshMarketLead">
                 {t('skillPacksDesc')}
               </p>
-              <p style={{ margin: 0, fontSize: '12px', color: 'var(--dsw-alias-label-tertiary)' }}>
-                {t('noSkillPacks')}
-              </p>
+              <Empty description={t('noSkillPacks')} />
             </div>
           )}
         </div>
@@ -190,42 +163,34 @@ export function DesktopSkillsTab({ t }: DesktopSkillsTabProps) {
 
       {/* 技能市场 (占位) */}
       {activeSubTab === 'market' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div className="dshTertiaryNavTabs">
-            <button
-              type="button"
-              className={`dshTertiaryNavTab ${activeMarketTertiary === 'market-single' ? 'active' : ''}`}
-              onClick={() => setActiveMarketTertiary('market-single')}
-            >
-              {t('extSkillMarketSingle')}
-            </button>
-            <button
-              type="button"
-              className={`dshTertiaryNavTab ${activeMarketTertiary === 'market-packs' ? 'active' : ''}`}
-              onClick={() => setActiveMarketTertiary('market-packs')}
-            >
-              {t('extSkillMarketPacks')}
-            </button>
-          </div>
+        <div className="dshSkillsSection">
+          <ChipTabs<SkillMarketTertiary>
+            value={activeMarketTertiary}
+            onChange={setActiveMarketTertiary}
+            options={[
+              { value: 'market-single', label: t('extSkillMarketSingle') },
+              { value: 'market-packs', label: t('extSkillMarketPacks') },
+            ]}
+          />
 
           <div className="dshMarketPlaceholderCard">
             <div className="dshMarketHeader">
-              <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--dsw-alias-label-primary)' }}>{t('marketPlaceholderTitle')}</h4>
-              <span className="dshMarketBadge">{t('marketPlaceholderBadge')}</span>
+              <h4 className="dshMarketTitle">{t('marketPlaceholderTitle')}</h4>
+              <Badge variant="primary">{t('marketPlaceholderBadge')}</Badge>
             </div>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--dsw-alias-label-secondary)', maxWidth: '520px' }}>
+            <p className="dshMarketLead">
               {t('marketPlaceholderDesc')}
             </p>
             <div className="dshMarketGrid">
               <div className="dshMarketSampleCard">
-                <span style={{ fontWeight: 600, fontSize: '13px', color: 'var(--dsw-alias-label-primary)' }}>dsh-std-plugin-crafting</span>
-                <span style={{ fontSize: '12px', color: 'var(--dsw-alias-label-secondary)' }}>官方标准插件规范设计、脚手架与准入自检技能</span>
-                <span className="dshMarketBadge" style={{ alignSelf: 'flex-start' }}>官方技能</span>
+                <span className="dshMarketCardName">dsh-std-plugin-crafting</span>
+                <span className="dshMarketCardDesc">{t('skillSampleCraftingDesc')}</span>
+                <Badge variant="primary" className="dshMarketCardBadge">{t('marketBadgeOfficialSkill')}</Badge>
               </div>
               <div className="dshMarketSampleCard">
-                <span style={{ fontWeight: 600, fontSize: '13px', color: 'var(--dsw-alias-label-primary)' }}>fullstack-dev-pack</span>
-                <span style={{ fontSize: '12px', color: 'var(--dsw-alias-label-secondary)' }}>全栈研发技能套件（含架构、API、测试套件）</span>
-                <span className="dshMarketBadge" style={{ alignSelf: 'flex-start' }}>套件预告</span>
+                <span className="dshMarketCardName">fullstack-dev-pack</span>
+                <span className="dshMarketCardDesc">{t('skillSampleFullstackDesc')}</span>
+                <Badge variant="primary" className="dshMarketCardBadge">{t('marketBadgePackPreview')}</Badge>
               </div>
             </div>
           </div>
