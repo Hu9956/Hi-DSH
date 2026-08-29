@@ -15,7 +15,7 @@ import {
 import { DesktopSettingsSection } from '../src/client/DesktopSettingsSection.tsx'
 import { DesktopTerminalSettingsAction } from '../src/client/DesktopTerminalSettingsAction.tsx'
 import { DesktopUpdateCheckRow } from '../src/client/DesktopUpdateCheckRow.tsx'
-import { DesktopComplianceCheckerTab } from '../src/client/DesktopComplianceCheckerTab.tsx'
+import { DesktopComplianceCheckerTab, extractEmbeddedManifest } from '../src/client/DesktopComplianceCheckerTab.tsx'
 import { DesktopSkillsTab } from '../src/client/DesktopSkillsTab.tsx'
 import { DesktopConnectorsTab } from '../src/client/DesktopConnectorsTab.tsx'
 import {
@@ -413,5 +413,34 @@ describe('Desktop settings Slot registration', () => {
 
     await control.setMode('extended')
     expect(scope.set).toHaveBeenCalledWith('mode', 'extended')
+  })
+})
+
+describe('extractEmbeddedManifest', () => {
+  it('reads string fields from an embedded manifest block as text', () => {
+    const source = [
+      'export const manifest = {',
+      "  apiVersion: 'dsh-std/v1',",
+      '  kind: "Tool",',
+      "  name: 'my-tool',",
+      "  version: '1.0.0',",
+      "  requires: ['network'],",
+      '}',
+      'export function apply(ctx) {}',
+    ].join('\n')
+    expect(extractEmbeddedManifest(source)).toEqual({
+      apiVersion: 'dsh-std/v1',
+      kind: 'Tool',
+      name: 'my-tool',
+      version: '1.0.0',
+    })
+  })
+
+  it('returns null when no manifest block is embedded', () => {
+    expect(extractEmbeddedManifest('export const thing = 1\nexport function apply(ctx) {}')).toBeNull()
+  })
+
+  it('returns null when the block carries no string fields', () => {
+    expect(extractEmbeddedManifest('export const manifest = { flags: [1, 2], nested: { a: 1 } }')).toBeNull()
   })
 })

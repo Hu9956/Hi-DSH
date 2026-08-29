@@ -18,6 +18,28 @@ export interface DesktopComplianceCheckerTabProps
   t: (key: DesktopSettingsLocaleKey) => string
 }
 
+/**
+ * Extract an embedded `export const manifest = { ... }` block from pasted
+ * plugin source. The pasted text is untrusted data, so only its string fields
+ * are read here, as text — the manifest block is handed to the validator as a
+ * plain object and the rest of the source is never treated as code.
+ */
+export function extractEmbeddedManifest(source: string): unknown {
+  const block = source.match(/export\s+const\s+manifest\s*=\s*\{([\s\S]*?)\}(?:\s*as\s+const)?/u)
+  if (block === null || block[1] === undefined) return null
+  const fields: Record<string, string> = {}
+  const doubleQuoted = /(\w+)\s*:\s*"([^"]*)"/gu
+  const singleQuoted = /(\w+)\s*:\s*'([^']*)'/gu
+  for (const pattern of [doubleQuoted, singleQuoted]) {
+    for (const match of block[1].matchAll(pattern)) {
+      const key = match[1]
+      const value = match[2]
+      if (key !== undefined && value !== undefined) fields[key] = value
+    }
+  }
+  return Object.keys(fields).length > 0 ? fields : null
+}
+
 const PRESET_TOOL = `/**
  * @name dsh-plugin-sample-tool
  * apiVersion: dsh-std/v1
@@ -113,13 +135,7 @@ export function DesktopComplianceCheckerTab(props: DesktopComplianceCheckerTabPr
   const handleRunAudit = () => {
     startTransition(() => {
       // Try to parse manifest if embedded
-      let manifest: unknown = null
-      const manifestMatch = /export\s+const\s+manifest\s*=\s*(\{[\s\S]*?\})(?:\s*as\s+const)?/u.exec(sourceCode)
-      if (manifestMatch) {
-        try {
-          manifest = Function(`"use strict"; return (${manifestMatch[1]})`)()
-        } catch {}
-      }
+      const manifest = extractEmbeddedManifest(sourceCode)
 
       const outcome = verifyPluginCompliance({
         manifest: manifest ?? {
