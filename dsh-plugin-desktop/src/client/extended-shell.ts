@@ -18,6 +18,7 @@ import { installExtendedStyles } from './extended-styles.ts'
 import { DesktopLayoutState } from './layout-state.ts'
 import { installDesktopOwnedStyles } from './styles.ts'
 import { installComposerSurfaceTagger } from './t3-composer-surface.ts'
+import { installAccessModeLocales } from './access-mode-locales.ts'
 import { DesktopThemePresenter } from './theme-presenter.ts'
 
 /** Own the extended root/sidebar surface without reusing enhanced-mode chrome. */
@@ -82,9 +83,11 @@ export function applyFramedShell(
     contentViewport.dataset.dshDesktopContentViewport = ''
     const removeStyles = installExtendedStyles()
     const removeComposerTagger = installComposerSurfaceTagger(contentViewport)
+    const removeAccessModeLocales = installAccessModeLocales()
     return () => {
       removeStyles()
       removeComposerTagger()
+      removeAccessModeLocales()
       delete contentViewport.dataset.dshDesktopContentViewport
       delete document.body.dataset.dshDesktopMode
       delete document.body.dataset.dshDesktopPlatform
