@@ -1,0 +1,28 @@
+{
+  "name": "dsh-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hi-DSH desktop component library — the T3 Code design language as self-contained React primitives.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.0.0",
+    "jsdom": "^25.0.0",
+    "react": "18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "6.0.3",
+    "vitest": "4.1.8"
+  },
+  "license": "MIT"
+}

@@ -12,7 +12,8 @@
     "dsh-plugin-desktop",
     "dsh-community-fabric",
     "dsh-community-market",
-    "dsh-plugin-skill-board"
+    "dsh-plugin-skill-board",
+    "dsh-ui"
   ],
   "resolutions": {
     "app-builder-lib@npm:26.15.7": "patch:app-builder-lib@npm%3A26.15.7#./patches/app-builder-lib@26.15.7.patch",
@@ -65,7 +66,7 @@
   "scripts": {
     "build": "yarn workspace dsh-community-market build && yarn workspace dsh-plugin-desktop build",
     "typecheck": "yarn workspace dsh-plugin-desktop typecheck && yarn workspace dsh-community-market typecheck",
-    "test": "yarn workspace dsh-plugin-desktop test && yarn workspace dsh-community-market test",
+    "test": "yarn workspace dsh-plugin-desktop test && yarn workspace dsh-ui test && yarn workspace dsh-community-market test",
     "test:bilingual-docs": "node --test scripts/bilingual-docs.test.mjs",
     "check:bilingual-docs": "yarn test:bilingual-docs && node scripts/verify-bilingual-docs.mjs",
     "test:architecture-gates": "node --test scripts/market-dependency-direction.test.mjs",
@@ -83,5 +84,9 @@
     "upstream:install": "cd deepseek-harness && corepack pnpm install --frozen-lockfile",
     "upstream:build": "cd deepseek-harness && corepack pnpm run build"
   },
-  "author": "KunWei <2088220700@qq.com>"
+  "author": "KunWei <2088220700@qq.com>",
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0"
+  }
 }
